@@ -1,0 +1,110 @@
+# ============================================
+# ROOT LEVEL - Only track Backend/ and Frontend/
+# ============================================
+
+# Exclude everything at root level
+/*
+
+# But include Backend and Frontend folders
+!Backend/
+!Frontend/
+
+# Include this .gitignore file itself
+!.gitignore
+
+# Include README if you want to add one later
+!README.md
+
+# ============================================
+# BACKEND - Node.js / Prisma
+# ============================================
+
+# Dependencies
+Backend/CMS_Ecommerse/node_modules/
+
+# Environment variables (IMPORTANT - contains sensitive data)
+Backend/CMS_Ecommerse/.env
+Backend/CMS_Ecommerse/.env.local
+Backend/CMS_Ecommerse/.env.*.local
+
+# Prisma generated files
+Backend/CMS_Ecommerse/generated/
+
+# Database files
+Backend/CMS_Ecommerse/*.db
+Backend/CMS_Ecommerse/*.sqlite
+Backend/CMS_Ecommerse/*.sqlite3
+Backend/CMS_Ecommerse/prisma/*.db
+Backend/CMS_Ecommerse/prisma/*.sqlite
+
+# Logs
+Backend/CMS_Ecommerse/logs/
+Backend/CMS_Ecommerse/*.log
+Backend/CMS_Ecommerse/npm-debug.log*
+Backend/CMS_Ecommerse/yarn-debug.log*
+Backend/CMS_Ecommerse/yarn-error.log*
+Backend/CMS_Ecommerse/pnpm-debug.log*
+
+# ============================================
+# FRONTEND - React / Vite
+# ============================================
+
+# Dependencies
+Frontend/dashboard_ecommerse/node_modules/
+
+# Build outputs
+Frontend/dashboard_ecommerse/dist/
+Frontend/dashboard_ecommerse/dist-ssr/
+Frontend/dashboard_ecommerse/build/
+
+# Environment variables
+Frontend/dashboard_ecommerse/.env
+Frontend/dashboard_ecommerse/.env.local
+Frontend/dashboard_ecommerse/.env.*.local
+Frontend/dashboard_ecommerse/*.local
+
+# Logs
+Frontend/dashboard_ecommerse/logs/
+Frontend/dashboard_ecommerse/*.log
+Frontend/dashboard_ecommerse/npm-debug.log*
+Frontend/dashboard_ecommerse/yarn-debug.log*
+Frontend/dashboard_ecommerse/yarn-error.log*
+Frontend/dashboard_ecommerse/pnpm-debug.log*
+Frontend/dashboard_ecommerse/lerna-debug.log*
+
+# ============================================
+# EDITOR / IDE
+# ============================================
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Windows
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ============================================
+# MISC
+# ============================================
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

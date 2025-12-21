@@ -1,9 +1,13 @@
 import { Dropdown, Layout, Avatar } from 'antd';
-import { MoonOutlined, UserOutlined } from '@ant-design/icons';
+import { BulbOutlined, MoonOutlined, UserOutlined } from '@ant-design/icons';
+import { useContext } from 'react';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const { Header } = Layout;
 
 const AppHeader = () => {
+  const { isDark, toggleTheme } = useContext(ThemeContext);
+
   const menuItems = [
     {
       key: 'Profile',
@@ -23,8 +27,11 @@ const AppHeader = () => {
     <Header className='flex justify-between items-center px-6 shadow-sm'>
       <div />
       <div className='flex items-center gap-4'>
-        <button className='text-lg cursor-pointer hover:text-blue-500 transition-colors'>
-          <MoonOutlined />
+        <button
+          className='text-lg cursor-pointer hover:text-blue-500 transition-colors'
+          onClick={toggleTheme}
+        >
+          {isDark ? <BulbOutlined /> : <MoonOutlined />}
         </button>
         <Dropdown placement='bottomRight' menu={{ items: menuItems }}>
           <Avatar

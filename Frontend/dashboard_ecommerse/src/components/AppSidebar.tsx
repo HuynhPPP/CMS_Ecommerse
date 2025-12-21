@@ -2,11 +2,13 @@ import Sider from 'antd/es/layout/Sider';
 import {
   DashboardOutlined,
   ShoppingOutlined,
-  UploadOutlined,
+  AppstoreOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const AppSidebar = () => {
   const items = [
@@ -21,18 +23,20 @@ const AppSidebar = () => {
       label: 'Products',
     },
     {
+      key: 'categories',
+      icon: <AppstoreOutlined />,
+      label: 'Category',
+    },
+    {
       key: 'users',
       icon: <UserOutlined />,
       label: 'Users',
     },
-    {
-      key: 'orders',
-      icon: <UploadOutlined />,
-      label: 'Orders',
-    },
   ];
 
   const navigate = useNavigate();
+
+  const { isDark } = useContext(ThemeContext);
 
   const handleNavigate = (path: any) => {
     navigate(`/${path.key}`);
@@ -44,9 +48,8 @@ const AppSidebar = () => {
         ADMIN PANEL
       </div>
       <Menu
-        theme='dark'
+        theme={isDark ? 'dark' : 'light'}
         className='h-screen'
-        mode='inline'
         defaultSelectedKeys={['1']}
         onClick={handleNavigate}
         items={items}

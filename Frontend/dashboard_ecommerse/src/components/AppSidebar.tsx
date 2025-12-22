@@ -23,7 +23,7 @@ const AppSidebar = () => {
       label: 'Products',
     },
     {
-      key: 'categories',
+      key: 'category',
       icon: <AppstoreOutlined />,
       label: 'Category',
     },

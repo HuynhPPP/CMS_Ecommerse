@@ -71,6 +71,62 @@ const CategoriesControllers = {
       return res.status(500).json('Internal Server Error');
     }
   },
+
+  getCategoryById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const category = await prisma.category.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+
+      res.json(category);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.message });
+    }
+  },
+
+  updateCategory: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { name, slug, isActive } = req.body;
+      const updatedCategory = await prisma.category.update({
+        where: {
+          id: Number(id),
+        },
+        data: {
+          name,
+          slug,
+          isActive,
+        },
+      });
+      res.json(updatedCategory);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.message });
+    }
+  },
+
+  deleteCategory: async (req, res) => {
+    try {
+      const { id } = req.params;
+      await prisma.category.delete({
+        where: {
+          id: Number(id),
+        },
+      });
+      res.json({ message: 'Category deleted successfully' });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.message });
+    }
+  },
 };
 
 module.exports = CategoriesControllers;

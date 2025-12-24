@@ -1,6 +1,7 @@
 import AppModal from '../../components/common/AppModal';
-import { Form, Input, Switch } from 'antd';
+import { Form, Input, message, Switch } from 'antd';
 import CategoryService from '../../services/CategoryService';
+import { useEffect } from 'react';
 
 type Props = {
   open: boolean;
@@ -15,16 +16,30 @@ const ModalCategories = ({ open, onClose, onSuccess, categoryId }: Props) => {
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      console.log(values);
-
-      await CategoryService.createCategory(values);
+      if (categoryId) {
+        await CategoryService.updateCategory(categoryId, values);
+        message.success('Cập nhật danh mục thành công');
+      } else {
+        await CategoryService.createCategory(values);
+        message.success('Tạo danh mục thành công');
+      }
       form.resetFields();
       onClose();
       onSuccess();
     } catch (error) {
-      console.log(error);
+      message.error('Cập nhật danh mục thất bại');
     }
   };
+
+  useEffect(() => {
+    if (categoryId) {
+      CategoryService.getCategoryById(categoryId).then((res) => {
+        form.setFieldsValue(res.data);
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [categoryId]);
 
   return (
     <AppModal

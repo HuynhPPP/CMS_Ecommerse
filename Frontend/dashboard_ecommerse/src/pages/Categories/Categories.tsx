@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import AppFilter from '../../components/common/AppFilter';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import TableCategories from './TableCategories';
 import ModalCategories from './Modal';
 import CategoryService from '../../services/CategoryService';
@@ -40,6 +40,7 @@ const Categories = () => {
   });
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const debouncedSearch = useDebounce(query.search, 400);
+  const [isEditing, setIsEditing] = useState(0);
 
   const handleGetValueFilter = (valueFilter: any) => {
     setQuery((prev) => ({
@@ -90,6 +91,23 @@ const Categories = () => {
     }));
   };
 
+  const handleEditCategory = (id: number) => {
+    setOpenModal(true);
+    setIsEditing(id);
+  };
+
+  const handleDeleteCategory = async (id: number) => {
+    await CategoryService.deleteCategory(id)
+      .then(() => {
+        fetchCategories();
+        message.success('Xóa danh mục thành công');
+      })
+      .catch((error) => {
+        console.error('Error deleting category:', error);
+        message.error('Xóa danh mục thất bại');
+      });
+  };
+
   useEffect(() => {
     fetchCategories();
   }, [query.limit, query.page, debouncedSearch, query.isActive]);
@@ -122,8 +140,8 @@ const Categories = () => {
         total={query?.meta?.total ?? 0}
         categories={categories}
         onPageChange={handleChangePageSizeTable}
-        onDelete={() => {}}
-        onEdit={() => {}}
+        onDelete={handleDeleteCategory}
+        onEdit={handleEditCategory}
       />
 
       <ModalCategories
@@ -132,6 +150,7 @@ const Categories = () => {
         onSuccess={() => {
           fetchCategories();
         }}
+        categoryId={isEditing}
       />
     </div>
   );

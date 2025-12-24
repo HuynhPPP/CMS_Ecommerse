@@ -1,5 +1,6 @@
 import { Table, Tag } from 'antd';
 import type { CategoryType } from './Type';
+import TableAction from '../../components/common/TableAction';
 
 type Props = {
   categories: CategoryType[];
@@ -48,7 +49,14 @@ const TableCategories = ({
       title: 'Hành động',
       dataIndex: 'action',
       key: 'action',
-      render: (text: string) => <div>Hành động</div>,
+      render: (text: string, record: any) => (
+        <TableAction
+          showEdit
+          showDelete
+          onEdit={() => onEdit(record.id)}
+          onDelete={() => onDelete(record.id)}
+        />
+      ),
     },
   ];
 

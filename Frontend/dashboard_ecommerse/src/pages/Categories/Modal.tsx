@@ -1,5 +1,6 @@
 import AppModal from '../../components/common/AppModal';
 import { Form, Input, Switch } from 'antd';
+import CategoryService from '../../services/CategoryService';
 
 type Props = {
   open: boolean;
@@ -15,6 +16,11 @@ const ModalCategories = ({ open, onClose, onSuccess, categoryId }: Props) => {
     try {
       const values = await form.validateFields();
       console.log(values);
+
+      await CategoryService.createCategory(values);
+      form.resetFields();
+      onClose();
+      onSuccess();
     } catch (error) {
       console.log(error);
     }
@@ -47,12 +53,8 @@ const ModalCategories = ({ open, onClose, onSuccess, categoryId }: Props) => {
           <Input placeholder='Ví dụ thoi-trang' />
         </Form.Item>
 
-        <Form.Item
-          name='isActive'
-          label='Trạng thái'
-          rules={[{ required: true, message: 'Vui lòng nhập trạng thái' }]}
-        >
-          <Switch />
+        <Form.Item name='isActive' label='Trạng thái'>
+          <Switch defaultChecked={true} />
         </Form.Item>
       </Form>
     </AppModal>

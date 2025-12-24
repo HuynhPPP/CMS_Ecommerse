@@ -1,9 +1,12 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import AppFilter from '../../components/common/AppFilter';
 import { Button } from 'antd';
 import TableCategories from './TableCategories';
 import ModalCategories from './Modal';
+import CategoryService from '../../services/CategoryService';
+import type { CategoryQuery, CategoryType } from './Type';
+import { useDebounce } from '../../hooks/useDebounce';
 
 const CategoriesFilters = [
   {
@@ -19,8 +22,8 @@ const CategoriesFilters = [
     placeholder: 'Trạng thái',
     options: [
       { label: 'Tất cả', value: '0' },
-      { label: 'Hoạt động', value: '1' },
-      { label: 'Không hoạt động', value: '2' },
+      { label: 'Hoạt động', value: 'true' },
+      { label: 'Không hoạt động', value: 'false' },
     ],
   },
 ];
@@ -28,14 +31,68 @@ const CategoriesFilters = [
 const Categories = () => {
   const { isDark } = useContext(ThemeContext);
   const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [query, setQuery] = useState<CategoryQuery>({
+    search: '',
+    isActive: '',
+    page: 1,
+    limit: 10,
+  });
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+  const debouncedSearch = useDebounce(query.search, 400);
 
   const handleGetValueFilter = (valueFilter: any) => {
-    console.log(valueFilter);
+    setQuery((prev) => ({
+      ...prev,
+      page: 1,
+      search: valueFilter?.search,
+      isActive: valueFilter?.isActive ?? '',
+    }));
   };
 
-  const handleToggleModal = () => {
+  const fetchCategories = async () => {
+    try {
+      setIsLoading(true);
+      const res = await CategoryService.getCategories(query);
+      console.log('API Response:', res);
+      console.log('API Response Data:', res.data);
+      console.log('Is Array:', Array.isArray(res.data));
+
+      // Ensure we always set an array
+      const categoriesData = Array.isArray(res.data) ? res.data : [];
+      setCategories(categoriesData);
+
+      setQuery((prev) => ({
+        ...prev,
+        page: res.meta?.page ?? prev.page,
+        limit: res.meta?.limit ?? prev.limit,
+        meta: res.meta,
+      }));
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Error fetching categories:', error);
+      setCategories([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handdleToggleModal = () => {
     setOpenModal(!openModal);
   };
+
+  const handleChangePageSizeTable = (newPage: number, newSize: number) => {
+    setQuery((prev) => ({
+      ...prev,
+      page: newPage,
+      limit: newSize,
+    }));
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, [query.limit, query.page, debouncedSearch, query.isActive]);
 
   return (
     <div
@@ -54,25 +111,27 @@ const Categories = () => {
           onChange={handleGetValueFilter}
         />
 
-        <Button type='primary' onClick={handleToggleModal}>
+        <Button type='primary' onClick={handdleToggleModal}>
           + Tạo danh mục mới
         </Button>
       </div>
       <TableCategories
-        loading={false}
-        page={1}
-        pageSize={10}
-        total={0}
-        categories={[]}
-        onPageChange={() => {}}
+        loading={isLoading}
+        page={query.page}
+        pageSize={query.limit}
+        total={query?.meta?.total ?? 0}
+        categories={categories}
+        onPageChange={handleChangePageSizeTable}
         onDelete={() => {}}
         onEdit={() => {}}
       />
 
       <ModalCategories
         open={openModal}
-        onClose={handleToggleModal}
-        onSuccess={handleToggleModal}
+        onClose={handdleToggleModal}
+        onSuccess={() => {
+          fetchCategories();
+        }}
       />
     </div>
   );

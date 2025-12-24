@@ -1,0 +1,76 @@
+const prisma = require('../lib/prisma');
+
+const CategoriesControllers = {
+  createCategory: async (req, res) => {
+    try {
+      const { name, slug, isActive } = req.body;
+      const newCategory = await prisma.category.create({
+        data: {
+          name,
+          slug,
+          isActive,
+        },
+      });
+      res.send(newCategory);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ error: error.message });
+    }
+  },
+
+  getCategories: async (req, res) => {
+    try {
+      let page = parseInt(req.query.page, 10) || 1;
+      let limit = parseInt(req.query.limit, 10) || 10;
+
+      const search = req.query.search || '';
+      const isActive = req.query.isActive;
+
+      if (page < 1) page = 1;
+      if (limit < 1) limit = 10;
+      if (limit > 100) limit = 100;
+
+      const skip = (page - 1) * limit;
+
+      const where = {
+        ...(search && {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }),
+        ...(isActive !== undefined &&
+          isActive !== '' && {
+            isActive: isActive === 'true',
+          }),
+      };
+
+      const [category, total] = await Promise.all([
+        prisma.category.findMany({
+          skip,
+          take: limit,
+          where,
+          orderBy: {
+            id: 'desc',
+          },
+        }),
+        prisma.category.count({ where }),
+      ]);
+
+      res.json({
+        data: category,
+        meta: {
+          total,
+          page,
+          limit,
+          pageCount: Math.ceil(total / limit),
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json('Internal Server Error');
+    }
+  },
+};
+
+module.exports = CategoriesControllers;

@@ -13,6 +13,7 @@ type Props = {
 };
 
 const TableCategories = ({
+  categories,
   total,
   page,
   pageSize,
@@ -54,7 +55,7 @@ const TableCategories = ({
   return (
     <Table
       columns={columns}
-      dataSource={[]}
+      dataSource={categories}
       loading={loading}
       rowKey='id'
       pagination={{

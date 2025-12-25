@@ -35,4 +35,39 @@ model Products {
 
   categoryId Int
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  colors ProductColor[]
 }
+
+model ProductColor {
+  id Int @id @default(autoincrement())
+  productId Int
+  color String
+  colorCode String @default("#000000")
+
+  product Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  images ProductColorImage[]
+  variants ProductColorVariants[]
+}
+
+model ProductColorImage {
+  id Int @id @default(autoincrement())
+  colorId Int
+  imageUrl String
+  order Int
+
+  color ProductColor @relation(fields: [colorId], references: [id], onDelete: Cascade)
+}
+
+model ProductColorVariants {
+  id Int @id @default(autoincrement())
+  colorId Int
+  price Float
+  size String
+  stock Int
+
+  color ProductColor @relation(fields: [colorId], references: [id], onDelete: Cascade)
+}
+
+

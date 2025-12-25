@@ -1,4 +1,4 @@
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 type ThemeContextType = {
@@ -39,6 +39,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>
       <ConfigProvider
         theme={{
+          algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
           components: {
             Layout: {
               headerBg: isDark ? '#1f1f1f' : '#fff',

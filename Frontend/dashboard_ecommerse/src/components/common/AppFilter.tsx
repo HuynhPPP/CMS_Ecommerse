@@ -12,7 +12,7 @@ type InputFilter = BaseFilter & {
 };
 
 type FilterOptions = {
-  value: string;
+  value: string | number;
   label: string;
 };
 
@@ -21,7 +21,7 @@ type SelectFilter = BaseFilter & {
   options: FilterOptions[];
 };
 
-type FilterConfig = InputFilter | SelectFilter;
+export type FilterConfig = InputFilter | SelectFilter;
 
 type FilterProps = {
   filters: FilterConfig[];

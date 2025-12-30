@@ -12,6 +12,20 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id Int @id @default(autoincrement())
+  username String
+  email String @unique
+  password String
+  role String @default("USER")
+  isActive Boolean @default(true)
+  isDeleted Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order[]
+}
+
 model Category {
   id Int @id @default(autoincrement())
   name String
@@ -68,6 +82,53 @@ model ProductColorVariants {
   stock Int
 
   color ProductColor @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
 }
+
+model Order {
+  id Int @id @default(autoincrement())
+  userId Int
+  status String @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  totalAmount Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive Boolean @default(true)
+  isDeleted Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  items OrderItem[]
+  address Address?
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+  orderId Int
+  productVariantId Int
+  quantity Int
+  price Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive Boolean @default(true)
+  isDeleted Boolean @default(false)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductColorVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+}
+
+model Address {
+  id Int @id @default(autoincrement())
+  orderId Int @unique
+  userId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive Boolean @default(true)
+  isDeleted Boolean @default(false)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+
+
 
 

@@ -7,6 +7,7 @@ import { ThemeContext } from '../../contexts/ThemeContext';
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import ProducsTable from './ProducsTable';
+import ProductModal from './ProductModal';
 
 const Products = () => {
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -49,6 +50,12 @@ const Products = () => {
     },
   ];
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleSuccessModal = () => {};
+
   console.log(categories);
 
   useEffect(() => {
@@ -86,6 +93,13 @@ const Products = () => {
       </div>
 
       <ProducsTable products={[]} />
+
+      <ProductModal
+        isOpen={openModal}
+        onCancel={handleCloseModal}
+        onSuccess={handleSuccessModal}
+        product={null}
+      />
     </div>
   );
 };

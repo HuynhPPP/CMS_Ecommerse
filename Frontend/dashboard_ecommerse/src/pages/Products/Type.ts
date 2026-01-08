@@ -26,3 +26,10 @@ export interface ProductType {
   };
   colors: Colors[];
 }
+
+export interface ProductPayload {
+  name: string;
+  description: string;
+  categoryId: number;
+  colors: Colors[];
+}

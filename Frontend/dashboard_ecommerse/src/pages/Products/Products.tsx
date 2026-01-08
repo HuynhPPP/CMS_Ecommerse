@@ -54,7 +54,10 @@ const Products = () => {
     setOpenModal(false);
   };
 
-  const handleSuccessModal = () => {};
+  const handleSuccessModal = () => {
+    // fetch lại danh sách products
+    setOpenModal(false);
+  };
 
   console.log(categories);
 

@@ -1,6 +1,5 @@
 import type { ProductType } from './Type';
 import {
-  App,
   Button,
   Col,
   Collapse,
@@ -13,6 +12,7 @@ import {
   Select,
   Space,
   Typography,
+  message,
 } from 'antd';
 import {
   CopyOutlined,
@@ -25,16 +25,16 @@ import type { CategoryType } from '../Categories/Type';
 import { ThemeContext } from '../../contexts/ThemeContext';
 import AppModal from '../../components/common/AppModal';
 import CategoryService from '../../services/CategoryService';
+import ProductService from '../../services/ProductService';
 
 type Props = {
   isOpen: boolean;
   onCancel: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
   product?: ProductType | null;
 };
 
 const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
-  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,9 +43,30 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
 
   const colors = Form.useWatch('colors', form);
 
-  console.log(colors);
+  const handleOk = async () => {
+    try {
+      setSubmitting(true);
+      const values = await form.validateFields();
 
-  const handleOk = () => {};
+      if (product) {
+        // Xử lý call API edit sản phẩm
+        await ProductService.updateProduct(product.id, values);
+        message.success('Cập nhật sản phẩm thành công');
+      } else {
+        // Xử lý call API create sản phẩm
+        await ProductService.createProduct(values);
+        message.success('Tạo sản phẩm thành công');
+      }
+
+      form.resetFields();
+      onSuccess?.();
+      onCancel();
+    } catch (error) {
+      message.error('Có lỗi xảy ra');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const fetchCategories = async () => {
     try {

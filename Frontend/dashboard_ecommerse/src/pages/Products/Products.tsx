@@ -8,11 +8,20 @@ import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import ProducsTable from './ProducsTable';
 import ProductModal from './ProductModal';
+import ProductService from '../../services/ProductService';
+import { App } from 'antd';
 
 const Products = () => {
+  const { message } = App.useApp();
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const { isDark } = useContext(ThemeContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState({
+    page: 1,
+    limit: 10,
+    search: '',
+  });
 
   const fetchCategories = async () => {
     try {
@@ -24,6 +33,19 @@ const Products = () => {
       setCategories(res.data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const res = await ProductService.getProducts(filter);
+      console.log(res);
+    } catch (error) {
+      message.error('Lỗi khi lấy danh sách sản phẩm');
+      console.error('Error fetching products:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,6 +78,7 @@ const Products = () => {
 
   const handleSuccessModal = () => {
     // fetch lại danh sách products
+    fetchProducts();
     setOpenModal(false);
   };
 
@@ -63,6 +86,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchCategories();
+    fetchProducts();
   }, []);
 
   return (

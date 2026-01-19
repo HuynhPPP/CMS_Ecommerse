@@ -24,6 +24,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   order Order[]
+  phycoOrders PhycoOrder[] @relation("PhycoOrders")
+  phycoProducts PhycoProduct[] @relation("PhycoProductAuthor")
 }
 
 model Category {
@@ -128,7 +130,217 @@ model Address {
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
+// ============================================
+// PHYCO PRODUCT SYSTEM - Independent System
+// ============================================
 
+model PhycoCategory {
+  id          Int       @id @default(autoincrement())
+  name        String
+  slug        String    @unique
+  description String?
+  
+  // Self-referencing for nested categories
+  parentId    Int?
+  parent      PhycoCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children    PhycoCategory[] @relation("CategoryHierarchy")
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isActive    Boolean   @default(true)
+  isDeleted   Boolean   @default(false)
+  
+  products    PhycoProduct[]
+}
 
+model PhycoProduct {
+  id                Int       @id @default(autoincrement())
+  
+  // 1. Core fields
+  sku               String?   @unique
+  name              String
+  slug              String    @unique
+  status            String    @default("publish") // publish, draft, pending, private
+  type              String    @default("simple")  // simple, variable, grouped, external
+  shortDescription  String?
+  description       String?
+  authorId          Int?
+  
+  // 2. Category
+  categoryId        Int
+  
+  // 3. Pricing & Stock (for simple products)
+  price             Float?
+  regularPrice      Float?
+  salePrice         Float?
+  saleStart         DateTime?
+  saleEnd           DateTime?
+  stockStatus       String    @default("instock") // instock, outofstock, onbackorder
+  stockQuantity     Int?
+  manageStock       Boolean   @default(false)
+  backordersAllowed Boolean   @default(false)
+  
+  // 4. Media
+  featuredImageUrl  String?
+  imageAlt          String?
+  
+  // 5. Shipping & Dimensions
+  weight            String?
+  length            Float?
+  width             Float?
+  height            Float?
+  shippingClassId   Int?
+  
+  // 6. Tax & Special
+  taxStatus         String?   @default("taxable") // taxable, shipping, none
+  taxClass          String?
+  virtual           Boolean   @default(false)
+  downloadable      Boolean   @default(false)
+  purchaseNote      String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  isActive          Boolean   @default(true)
+  isDeleted         Boolean   @default(false)
+  
+  // Relations
+  category          PhycoCategory           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  author            User?                   @relation("PhycoProductAuthor", fields: [authorId], references: [id])
+  images            PhycoProductImage[]
+  tags              PhycoProductTag[]
+  attributes        PhycoProductAttribute[]
+  variations        PhycoProductVariation[]
+  downloads         PhycoProductDownload[]
+}
 
+model PhycoProductVariation {
+  id                Int      @id @default(autoincrement())
+  productId         Int
+  sku               String?  @unique
+  
+  // Pricing
+  price             Float
+  regularPrice      Float?
+  salePrice         Float?
+  saleStart         DateTime?
+  saleEnd           DateTime?
+  
+  // Stock
+  stockStatus       String   @default("instock")
+  stockQuantity     Int?
+  manageStock       Boolean  @default(false)
+  backordersAllowed Boolean  @default(false)
+  
+  // Attributes (JSON)
+  // Example: {"Màu sắc": "Xanh", "Kích thước": "500ml", "Combo": "Bộ 1-1"}
+  attributes        Json
+  
+  // Media
+  imageUrl          String?
+  
+  // Shipping
+  weight            String?
+  length            Float?
+  width             Float?
+  height            Float?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  product           PhycoProduct     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems        PhycoOrderItem[]
+}
+
+model PhycoProductImage {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  imageUrl   String
+  imageAlt   String?
+  order      Int      @default(0)
+  
+  product    PhycoProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model PhycoProductTag {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  name       String
+  slug       String
+  
+  product    PhycoProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([productId, slug])
+}
+
+model PhycoProductAttribute {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  name       String   // "Màu sắc", "Kích thước"
+  slug       String
+  visible    Boolean  @default(true)
+  variation  Boolean  @default(false)
+  
+  // Options: ["S", "M", "L"]
+  options    Json
+  
+  product    PhycoProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  @@unique([productId, slug])
+}
+
+model PhycoProductDownload {
+  id         Int      @id @default(autoincrement())
+  productId  Int
+  name       String
+  fileUrl    String
+  
+  product    PhycoProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model PhycoOrder {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  orderCode   String    @unique
+  status      String    @default("PENDING")
+  totalAmount Float
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isActive    Boolean   @default(true)
+  isDeleted   Boolean   @default(false)
+  
+  user        User              @relation("PhycoOrders", fields: [userId], references: [id], onDelete: Cascade)
+  items       PhycoOrderItem[]
+  address     PhycoAddress?
+}
+
+model PhycoOrderItem {
+  id         Int      @id @default(autoincrement())
+  orderId    Int
+  variationId Int
+  quantity   Int
+  price      Float
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  order      PhycoOrder           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variation  PhycoProductVariation @relation(fields: [variationId], references: [id], onDelete: Cascade)
+}
+
+model PhycoAddress {
+  id          Int      @id @default(autoincrement())
+  orderId     Int      @unique
+  fullName    String
+  phone       String
+  address     String
+  ward        String?
+  district    String?
+  city        String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  order       PhycoOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
 

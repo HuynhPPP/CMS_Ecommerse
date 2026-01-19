@@ -8,6 +8,7 @@
 # But include Backend and Frontend folders
 !Backend/
 !Frontend/
+!Frontend/user_frontend/
 
 # Include this .gitignore file itself
 !.gitignore

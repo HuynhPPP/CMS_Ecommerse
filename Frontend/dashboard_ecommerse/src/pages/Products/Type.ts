@@ -33,3 +33,15 @@ export interface ProductPayload {
   categoryId: number;
   colors: Colors[];
 }
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  pageCount: number;
+}
+
+export interface ProductResponse {
+  data: ProductType[];
+  meta: PaginationMeta;
+}

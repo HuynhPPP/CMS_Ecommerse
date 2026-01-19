@@ -1,0 +1,15 @@
+/* Phyco Categories Styling */
+
+/* Parent category row styling */
+.parent-category-row {
+  background-color: #fafafa !important;
+}
+
+.parent-category-row:hover {
+  background-color: #f0f0f0 !important;
+}
+
+/* Smooth transitions for expand/collapse */
+.ant-table-row {
+  transition: background-color 0.3s ease;
+}

@@ -1,0 +1,164 @@
+.footer {
+  background-color: #f5e6d3;
+  color: #333;
+  margin-top: auto;
+  padding: var(--spacing-2xl) 0 var(--spacing-lg) 0;
+}
+
+/* Headers Row */
+.footer-headers {
+  display: grid;
+  grid-template-columns: 280px 1fr 1fr;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
+}
+
+.footer-section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Content Row */
+.footer-content {
+  display: grid;
+  grid-template-columns: 280px 1fr 1fr;
+  gap: var(--spacing-2xl);
+  align-items: start;
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Logo */
+.footer-logo {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Social Links */
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: #333;
+  font-size: 0.95rem;
+  font-weight: 400;
+  transition: all var(--transition-fast);
+}
+
+.social-link svg {
+  flex-shrink: 0;
+}
+
+/* Social Media Icon Colors */
+.social-facebook svg {
+  color: #1877f2;
+  stroke: #1877f2;
+}
+
+.social-shopee svg {
+  color: #ee4d2d;
+  stroke: #ee4d2d;
+}
+
+.social-tiktok svg {
+  color: #000000;
+  fill: #000000;
+}
+
+.social-link:hover {
+  opacity: 0.8;
+}
+
+/* Footer Links */
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  list-style: none;
+}
+
+.footer-links a {
+  color: #333;
+  font-size: 0.9rem;
+  transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+  color: var(--primary-color);
+}
+
+/* Contact Info */
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.contact-info p {
+  color: #333;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.contact-info strong {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .footer-headers,
+  .footer-content {
+    grid-template-columns: 240px 1fr 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .footer-logo {
+    width: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-headers {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+
+  .footer-column {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-logo {
+    width: 180px;
+  }
+
+  .social-links {
+    align-items: center;
+  }
+
+  .footer-links {
+    align-items: center;
+  }
+}

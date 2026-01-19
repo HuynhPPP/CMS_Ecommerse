@@ -28,6 +28,16 @@ const AppSidebar = () => {
       label: 'Category',
     },
     {
+      key: 'phyco-categories',
+      icon: <AppstoreOutlined />,
+      label: 'Phyco Categories',
+    },
+    {
+      key: 'phyco-products',
+      icon: <ShoppingOutlined />,
+      label: 'Phyco Products',
+    },
+    {
       key: 'users',
       icon: <UserOutlined />,
       label: 'Users',

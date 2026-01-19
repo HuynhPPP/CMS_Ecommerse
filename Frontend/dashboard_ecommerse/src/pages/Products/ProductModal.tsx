@@ -1,5 +1,6 @@
 import type { ProductType } from './Type';
 import {
+  App,
   Button,
   Col,
   Collapse,
@@ -12,7 +13,6 @@ import {
   Select,
   Space,
   Typography,
-  message,
 } from 'antd';
 import {
   CopyOutlined,
@@ -35,6 +35,7 @@ type Props = {
 };
 
 const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,6 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
 
   const handleOk = async () => {
     try {
-      setSubmitting(true);
       const values = await form.validateFields();
 
       if (product) {

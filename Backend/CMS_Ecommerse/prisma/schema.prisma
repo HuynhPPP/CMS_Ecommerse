@@ -303,17 +303,26 @@ model PhycoProductDownload {
 
 model PhycoOrder {
   id          Int       @id @default(autoincrement())
-  userId      Int
+  userId      Int?      // Optional for guest checkout
+  sessionId   String?   // For guest orders
   orderCode   String    @unique
-  status      String    @default("PENDING")
-  totalAmount Float
+  status        String    @default("PENDING")
+  paymentMethod String    @default("COD") // COD, BANK_TRANSFER
+  paymentStatus String    @default("UNPAID") // UNPAID, PAID, FAILED
+  totalAmount   Float
+  discount      Float?    @default(0)
+  
+  // Guest customer info
+  customerName  String?
+  customerEmail String?
+  customerPhone String?
   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   isActive    Boolean   @default(true)
   isDeleted   Boolean   @default(false)
   
-  user        User              @relation("PhycoOrders", fields: [userId], references: [id], onDelete: Cascade)
+  user        User?              @relation("PhycoOrders", fields: [userId], references: [id], onDelete: Cascade)
   items       PhycoOrderItem[]
   address     PhycoAddress?
 }
@@ -356,6 +365,8 @@ model PhycoCart {
   id          Int      @id @default(autoincrement())
   userId      Int?     @unique // Null for guest users
   sessionId   String?  @unique // For guest users
+  couponCode  String?  // Applied coupon code
+  discount    Float?   @default(0) // Discount amount
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -404,4 +415,25 @@ model PhycoWishlistItem {
   product     PhycoProduct  @relation("WishlistItems", fields: [productId], references: [id], onDelete: Cascade)
   
   @@unique([wishlistId, productId])
+}
+
+// ============================================
+// COUPON SYSTEM
+// ============================================
+
+model PhycoCoupon {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  type        String   // \"percentage\" or \"fixed\"
+  value       Float
+  minAmount   Float?   // Minimum order amount to apply
+  maxDiscount Float?   // Maximum discount for percentage type
+  startDate   DateTime @default(now())
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  usageLimit  Int?     // Null = unlimited
+  usedCount   Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

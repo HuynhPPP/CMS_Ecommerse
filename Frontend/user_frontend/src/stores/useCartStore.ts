@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import { cartService, type CartItem, type Cart } from '../services/cartService';
+import { cartService, type Cart } from '../services/cartService';
 import { toast } from 'react-toastify';
 
 interface CartState {
@@ -16,6 +16,8 @@ interface CartState {
   updateQuantity: (itemId: number, quantity: number) => Promise<void>;
   removeItem: (itemId: number) => Promise<void>;
   clearCart: () => Promise<void>;
+  applyCoupon: (code: string) => Promise<void>;
+  removeCoupon: () => Promise<void>;
   toggleSidebar: () => void;
   openSidebar: () => void;
   closeSidebar: () => void;
@@ -95,6 +97,31 @@ export const useCartStore = create<CartState>()(
         } catch (error) {
           console.error('Error clearing cart:', error);
           toast.error('Không thể xóa giỏ hàng');
+        }
+      },
+
+      applyCoupon: async (code: string) => {
+        try {
+          const response = await cartService.applyCoupon(code, get().sessionId);
+          set({ cart: response.data });
+          toast.success('Áp dụng mã giảm giá thành công!');
+        } catch (error: any) {
+          console.error('Error applying coupon:', error);
+          const errorMessage =
+            error.response?.data?.error || 'Không thể áp dụng mã giảm giá';
+          toast.error(errorMessage);
+          throw error; // Re-throw to handle in component
+        }
+      },
+
+      removeCoupon: async () => {
+        try {
+          await cartService.removeCoupon(get().sessionId);
+          await get().fetchCart();
+          toast.success('Đã xóa mã giảm giá');
+        } catch (error: any) {
+          console.error('Error removing coupon:', error);
+          toast.error('Không thể xóa mã giảm giá');
         }
       },
 

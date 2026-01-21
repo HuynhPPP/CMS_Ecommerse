@@ -26,7 +26,8 @@
 .features-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
+  gap: 20px;
+  width: 100%;
 }
 
 .feature-card {
@@ -37,6 +38,7 @@
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   border: 2px solid transparent;
+  min-width: 0;
 }
 
 .feature-card:hover {
@@ -82,7 +84,7 @@
 }
 
 /* Responsive */
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 25px;

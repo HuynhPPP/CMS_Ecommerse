@@ -36,6 +36,13 @@
   display: block;
 }
 
+/* BannerSidebar component wrapper - apply sticky behavior */
+.hero-main-grid > .banner-sidebar {
+  position: sticky;
+  top: 120px;
+  align-self: start;
+}
+
 /* Content Column - Contains both carousel and page content */
 .hero-content-column {
   display: flex;

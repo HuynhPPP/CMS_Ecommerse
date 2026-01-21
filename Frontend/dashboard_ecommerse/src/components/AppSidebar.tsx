@@ -4,6 +4,8 @@ import {
   ShoppingOutlined,
   AppstoreOutlined,
   UserOutlined,
+  ShoppingCartOutlined,
+  GiftOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -36,6 +38,16 @@ const AppSidebar = () => {
       key: 'phyco-products',
       icon: <ShoppingOutlined />,
       label: 'Phyco Products',
+    },
+    {
+      key: 'phyco-orders',
+      icon: <ShoppingCartOutlined />,
+      label: 'Phyco Orders',
+    },
+    {
+      key: 'phyco-coupons',
+      icon: <GiftOutlined />,
+      label: 'Phyco Coupons',
     },
     {
       key: 'users',

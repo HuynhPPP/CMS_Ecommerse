@@ -22,6 +22,8 @@ export interface Cart {
   items: CartItem[];
   total: number;
   count: number;
+  discount?: number;
+  couponCode?: string;
 }
 
 export const cartService = {
@@ -70,6 +72,27 @@ export const cartService = {
    */
   async clearCart(sessionId?: string) {
     const response = await api.delete('/api/phyco/cart', {
+      params: { sessionId },
+    });
+    return response.data;
+  },
+
+  /**
+   * Apply coupon code
+   */
+  async applyCoupon(code: string, sessionId?: string) {
+    const response = await api.post('/api/phyco/cart/apply-coupon', {
+      code,
+      sessionId,
+    });
+    return response.data;
+  },
+
+  /**
+   * Remove coupon code
+   */
+  async removeCoupon(sessionId?: string) {
+    const response = await api.delete('/api/phyco/cart/remove-coupon', {
       params: { sessionId },
     });
     return response.data;

@@ -273,4 +273,142 @@ module.exports = {
       return res.status(500).json({ error: 'Failed to clear cart' });
     }
   },
+
+  // Apply coupon code
+  applyCoupon: async (req, res) => {
+    try {
+      const { code, sessionId } = req.body;
+      const userId = req.user?.id;
+
+      if (!code) {
+        return res.status(400).json({ error: 'Coupon code is required' });
+      }
+
+      // Find cart
+      let cart;
+      if (userId) {
+        cart = await prisma.phycoCart.findUnique({
+          where: { userId },
+          include: {
+            items: {
+              include: {
+                product: {
+                  select: { price: true, salePrice: true },
+                },
+              },
+            },
+          },
+        });
+      } else if (sessionId) {
+        cart = await prisma.phycoCart.findUnique({
+          where: { sessionId },
+          include: {
+            items: {
+              include: {
+                product: {
+                  select: { price: true, salePrice: true },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      if (!cart || cart.items.length === 0) {
+        return res.status(400).json({ error: 'Cart is empty' });
+      }
+
+      // Find coupon
+      const coupon = await prisma.phycoCoupon.findUnique({
+        where: { code: code.toUpperCase() },
+      });
+
+      if (!coupon) {
+        return res.status(404).json({ error: 'Invalid coupon code' });
+      }
+
+      // Validate coupon
+      const now = new Date();
+      if (!coupon.isActive) return res.status(400).json({ error: 'Coupon is inactive' });
+      if (now < coupon.startDate) return res.status(400).json({ error: 'Coupon is not yet valid' });
+      if (now > coupon.endDate) return res.status(400).json({ error: 'Coupon has expired' });
+      if (coupon.usageLimit !== null && coupon.usedCount >= coupon.usageLimit) {
+        return res.status(400).json({ error: 'Coupon usage limit reached' });
+      }
+
+      // Calculate cart total
+      const subtotal = cart.items.reduce((sum, item) => {
+        const price = item.product.salePrice || item.product.price || 0;
+        return sum + price * item.quantity;
+      }, 0);
+
+      // Check minimum amount
+      if (coupon.minAmount && subtotal < coupon.minAmount) {
+        return res.status(400).json({
+          error: `Minimum order amount is ${coupon.minAmount.toLocaleString('vi-VN')}`,
+        });
+      }
+
+      // Calculate discount
+      let discount = 0;
+      if (coupon.type === 'percentage') {
+        discount = (subtotal * coupon.value) / 100;
+        if (coupon.maxDiscount && discount > coupon.maxDiscount) {
+          discount = coupon.maxDiscount;
+        }
+      } else if (coupon.type === 'fixed') {
+        discount = coupon.value;
+      }
+
+      // Update cart with coupon
+      const updatedCart = await prisma.phycoCart.update({
+        where: { id: cart.id },
+        data: { couponCode: coupon.code, discount },
+        include: {
+          items: {
+            include: {
+              product: {
+                select: { id: true, name: true, slug: true, price: true, salePrice: true, featuredImageUrl: true },
+              },
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({
+        message: 'Coupon applied successfully',
+        data: { ...updatedCart, subtotal, total: subtotal - discount, count: updatedCart.items.length },
+      });
+    } catch (error) {
+      console.error('Error applying coupon:', error);
+      return res.status(500).json({ error: 'Failed to apply coupon' });
+    }
+  },
+
+  // Remove coupon
+  removeCoupon: async (req, res) => {
+    try {
+      const { sessionId } = req.query;
+      const userId = req.user?.id;
+
+      let cart;
+      if (userId) {
+        cart = await prisma.phycoCart.findUnique({ where: { userId } });
+      } else if (sessionId) {
+        cart = await prisma.phycoCart.findUnique({ where: { sessionId } });
+      }
+
+      if (!cart) return res.status(404).json({ error: 'Cart not found' });
+
+      await prisma.phycoCart.update({
+        where: { id: cart.id },
+        data: { couponCode: null, discount: 0 },
+      });
+
+      return res.status(200).json({ message: 'Coupon removed' });
+    } catch (error) {
+      console.error('Error removing coupon:', error);
+      return res.status(500).json({ error: 'Failed to remove coupon' });
+    }
+  },
 };

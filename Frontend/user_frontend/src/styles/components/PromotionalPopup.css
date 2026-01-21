@@ -1,0 +1,165 @@
+.promotional-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+  padding: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.promotional-popup-content {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  max-width: 850px;
+  width: 100%;
+  animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  overflow: hidden;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.promotional-popup-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  font-size: 20px;
+}
+
+.promotional-popup-close:hover {
+  background-color: #ff6b35;
+  transform: rotate(90deg);
+  border-color: #ff6b35;
+}
+
+.promotional-popup-banner {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.promotional-popup-banner:hover {
+  transform: scale(1.02);
+}
+
+.promotional-popup-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.promotional-popup-footer {
+  padding: 15px 20px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+}
+
+.dont-show-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  user-select: none;
+}
+
+.dont-show-checkbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #ff6b35;
+}
+
+.dont-show-checkbox span {
+  font-weight: 500;
+}
+
+.dont-show-checkbox:hover span {
+  color: #ff6b35;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .promotional-popup-overlay {
+    padding: 15px;
+  }
+
+  .promotional-popup-content {
+    max-width: 100%;
+  }
+
+  .promotional-popup-close {
+    width: 32px;
+    height: 32px;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+  }
+
+  .promotional-popup-footer {
+    padding: 12px 15px;
+  }
+
+  .dont-show-checkbox {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .promotional-popup-close {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+  }
+
+  .dont-show-checkbox {
+    font-size: 12px;
+  }
+
+  .dont-show-checkbox input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+  }
+}

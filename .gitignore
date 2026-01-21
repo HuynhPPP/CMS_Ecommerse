@@ -9,9 +9,12 @@
 !Backend/
 !Frontend/
 !Frontend/user_frontend/
+!Frontend/dashboard_ecommerse/
+
 
 # Include this .gitignore file itself
-!.gitignore
+.gitignore
+API_Product_Phyco.js
 
 # Include README if you want to add one later
 !README.md

@@ -1,0 +1,82 @@
+.review-form {
+  max-width: 600px;
+  margin-top: 32px;
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.review-form__title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 24px;
+}
+
+.review-form__field {
+  margin-bottom: 20px;
+}
+
+.review-form__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.review-form__required {
+  color: #e74c3c;
+}
+
+.review-form__input,
+.review-form__textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.review-form__input:focus,
+.review-form__textarea:focus {
+  outline: none;
+  border-color: #ff6b35;
+}
+
+.review-form__textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.review-form__submit {
+  width: 100%;
+  padding: 14px;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.review-form__submit:hover:not(:disabled) {
+  background: #e55a2b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.review-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767px) {
+  .review-form {
+    padding: 20px;
+  }
+}

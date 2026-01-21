@@ -1,0 +1,268 @@
+.video-introduction {
+  padding: 60px 0;
+  background: linear-gradient(135deg, #ffffff 0%, #fff5f0 100%);
+}
+
+.video-intro-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+}
+
+/* Video Column */
+.video-column {
+  position: relative;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.video-thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.video-thumbnail:hover {
+  transform: scale(1.02);
+}
+
+.video-thumbnail-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  z-index: 2;
+  transition: background 0.3s ease;
+}
+
+.video-thumbnail:hover .video-thumbnail-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.play-icon {
+  font-size: 80px;
+  color: white;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+  transition: all 0.3s ease;
+}
+
+.video-thumbnail:hover .play-icon {
+  transform: scale(1.1);
+  color: #ff6b35;
+}
+
+.play-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8f4d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.video-placeholder span {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.video-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Description Column */
+.description-column {
+  padding: 20px 0;
+}
+
+.video-intro-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 25px;
+  line-height: 1.3;
+}
+
+.video-intro-description {
+  margin-bottom: 30px;
+}
+
+.video-intro-description p {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 15px;
+}
+
+.video-intro-description strong {
+  color: #ff6b35;
+  font-weight: 700;
+}
+
+.video-intro-description em {
+  color: #ff6b35;
+  font-style: italic;
+}
+
+.video-intro-highlights {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.video-intro-highlights li {
+  font-size: 15px;
+  color: #555;
+  padding: 8px 0;
+  padding-left: 10px;
+  border-left: 3px solid #ff6b35;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.video-intro-highlights li:hover {
+  padding-left: 20px;
+  background-color: #fff5f0;
+}
+
+.btn-learn-more {
+  padding: 14px 40px;
+  background: linear-gradient(90deg, #ff6b35 0%, #ff8f4d 100%);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-learn-more:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+  background: linear-gradient(90deg, #ff8f4d 0%, #ff6b35 100%);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .video-intro-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .video-intro-title {
+    font-size: 28px;
+  }
+
+  .description-column {
+    padding: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .video-introduction {
+    padding: 50px 0;
+  }
+
+  .video-intro-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .video-intro-description p {
+    font-size: 14px;
+  }
+
+  .video-intro-highlights li {
+    font-size: 14px;
+  }
+
+  .play-icon {
+    font-size: 60px;
+  }
+
+  .play-text {
+    font-size: 16px;
+  }
+
+  .video-placeholder span {
+    font-size: 20px;
+  }
+
+  .btn-learn-more {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .video-introduction {
+    padding: 40px 0;
+  }
+
+  .video-intro-title {
+    font-size: 20px;
+  }
+
+  .video-intro-description p {
+    font-size: 13px;
+  }
+
+  .video-intro-highlights li {
+    font-size: 13px;
+    padding: 6px 0 6px 8px;
+  }
+
+  .play-icon {
+    font-size: 50px;
+  }
+
+  .play-text {
+    font-size: 14px;
+  }
+
+  .video-placeholder span {
+    font-size: 16px;
+  }
+}

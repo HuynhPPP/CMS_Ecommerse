@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import './BannerSection.css';
-import banner1 from '../assets/Banner/banner_1.png';
-import banner2 from '../assets/Banner/banner_2.png';
-import bannerSidebar from '../assets/Banner/banner_sidebar.png';
+import '../../styles/components/BannerSection.css';
+import banner1 from '../../assets/Banner/banner_1.png';
+import banner2 from '../../assets/Banner/banner_2.png';
+import bannerSidebar from '../../assets/Banner/banner_sidebar.png';
 
 const BannerSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);

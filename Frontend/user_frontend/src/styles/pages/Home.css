@@ -1,0 +1,30 @@
+.home-page {
+  min-height: 100vh;
+}
+
+.home-welcome {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.home-welcome h1 {
+  font-size: 36px;
+  color: #333;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.home-welcome p {
+  font-size: 18px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .home-welcome h1 {
+    font-size: 28px;
+  }
+
+  .home-welcome p {
+    font-size: 16px;
+  }
+}

@@ -4,6 +4,8 @@ const productsRouter = require('./products');
 const phycoCategoriesRouter = require('./phycoCategories');
 const phycoProductsRouter = require('./phycoProducts');
 const phycoOrdersRouter = require('./phycoOrders');
+const phycoCartRouter = require('./phycoCart');
+const phycoWishlistRouter = require('./phycoWishlist');
 
 const router = express.Router();
 
@@ -15,5 +17,7 @@ router.use('/api/products', productsRouter);
 router.use(phycoCategoriesRouter);
 router.use(phycoProductsRouter);
 router.use(phycoOrdersRouter);
+router.use(phycoCartRouter);
+router.use(phycoWishlistRouter);
 
 module.exports = router;

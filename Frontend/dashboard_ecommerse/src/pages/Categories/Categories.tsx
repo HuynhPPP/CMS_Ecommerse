@@ -10,13 +10,13 @@ import { useDebounce } from '../../hooks/useDebounce';
 
 const CategoriesFilters = [
   {
-    type: 'input',
+    type: 'input' as const,
     name: 'search',
     label: 'Tìm kiếm',
     placeholder: 'Nhập từ khóa tìm kiếm',
   },
   {
-    type: 'select',
+    type: 'select' as const,
     name: 'isActive',
     label: 'Trạng thái',
     placeholder: 'Trạng thái',

@@ -9,17 +9,18 @@ const AppLayout = () => {
     <Layout
       style={{
         height: '100vh',
+        overflow: 'hidden', // Ngăn toàn bộ trang bị cuộn
       }}
     >
       <AppSidebar />
-      <Layout>
+      <Layout style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <AppHeader />
 
         <Content
           style={{
             padding: 24,
-            minHeight: 280,
-            borderRadius: 8,
+            overflowY: 'auto', // Chỉ cho phép cuộn bên trong Content
+            flex: 1, // Chiếm trọn không gian còn lại
           }}
         >
           <Outlet /> {/* Nội dung "Content" được render */}

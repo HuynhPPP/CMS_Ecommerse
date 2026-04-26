@@ -91,12 +91,22 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
       onSuccess?.();
       onCancel();
     } catch (error: any) {
-      const errorMsg =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        'Có lỗi xảy ra';
-      message.error(errorMsg);
-      console.error('Full error:', error);
+      let errorMsg = 'Có lỗi xảy ra, vui lòng thử lại';
+
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        errorMsg = 'Không thể kết nối đến máy chủ..';
+      } else if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMsg = error.response.data.error;
+      }
+
+      message.error({
+        content: errorMsg,
+        duration: 5, // Hiển thị lâu hơn để người dùng kịp đọc
+      });
+
+      console.error('Full error details:', error);
     } finally {
       setSubmitting(false);
     }

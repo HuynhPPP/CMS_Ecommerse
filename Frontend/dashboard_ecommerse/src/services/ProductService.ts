@@ -22,6 +22,7 @@ const ProductService = {
     page?: number;
     limit?: number;
     search?: string;
+    categoryId?: number;
   }): Promise<ProductResponse> => {
     try {
       const res = await axiosInstance.get<ProductResponse>('/products', {

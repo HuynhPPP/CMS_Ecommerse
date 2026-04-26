@@ -13,9 +13,7 @@ const UploadService = {
   },
   
   deleteImage: async (publicId: string) => {
-    const res = await axiosInstance.delete('/upload', {
-      data: { publicId }
-    });
+    const res = await axiosInstance.post('/upload/delete', { publicId });
     return res.data;
   }
 };

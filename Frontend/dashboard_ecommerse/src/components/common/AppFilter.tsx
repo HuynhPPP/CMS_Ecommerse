@@ -12,7 +12,7 @@ type InputFilter = BaseFilter & {
 };
 
 type FilterOptions = {
-  value: string | number;
+  value: string | number | undefined;
   label: string;
 };
 

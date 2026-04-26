@@ -58,6 +58,8 @@ const productsController = {
       let limit = parseInt(req.query.limit, 10) || 10;
 
       const search = req.query.search || '';
+      const parsedCategoryId = parseInt(req.query.categoryId, 10);
+      const categoryId = !Number.isNaN(parsedCategoryId) ? parsedCategoryId : undefined;
 
       if (page < 1) page = 1;
       if (limit < 1) limit = 10;
@@ -73,6 +75,7 @@ const productsController = {
             mode: 'insensitive',
           },
         }),
+        ...(categoryId && { categoryId }),
       };
 
       const [products, total] = await Promise.all([

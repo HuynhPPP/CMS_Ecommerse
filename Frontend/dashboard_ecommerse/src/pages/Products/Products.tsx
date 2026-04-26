@@ -59,7 +59,7 @@ const Products = () => {
       ...prev,
       page: 1,
       search: values.search || '',
-      categoryId: values.categoryId || undefined,
+      categoryId: values.categoryId === '' ? undefined : values.categoryId,
     }));
   };
 
@@ -111,7 +111,7 @@ const Products = () => {
         { label: 'Tất cả danh mục', value: '' },
         ...categories.map((category) => ({
           label: category.name,
-          value: category.id.toString(),
+          value: category.id,
         })),
       ],
     },

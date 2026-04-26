@@ -1,6 +1,7 @@
 import { Image, Table, Tag, Typography, Tooltip, Space } from 'antd';
 import type { ProductType } from './Type';
 import TableAction from '../../components/common/TableAction';
+import { useState } from 'react';
 
 type Props = {
   products: ProductType[];
@@ -19,21 +20,35 @@ const ProducsTable = ({
   pagination,
   onChange,
 }: Props) => {
+  // State lưu trữ index của màu đang chọn cho mỗi sản phẩm: { [productId]: colorIndex }
+  const [selectedColorMap, setSelectedColorMap] = useState<Record<number, number>>({});
+
   const columns = [
     {
       title: 'Ảnh',
       key: 'image',
       width: 100,
       render: (_: any, record: ProductType) => {
-        const firstImage = record.colors?.[0]?.images?.[0]?.imageUrl;
+        const colorIndex = selectedColorMap[record.id] || 0;
+        const selectedColor = record.colors?.[colorIndex];
+        const images = selectedColor?.images || [];
+        const mainImage = images[0]?.imageUrl || 'https://via.placeholder.com/150';
+
         return (
-          <Image
-            src={firstImage || 'https://via.placeholder.com/150'}
-            alt={record.name}
-            width={60}
-            height={60}
-            style={{ objectFit: 'cover', borderRadius: 4 }}
-          />
+          <div className="product-image-preview">
+            <Image.PreviewGroup
+              items={images.map(img => img.imageUrl)}
+            >
+              <Image
+                src={mainImage}
+                alt={record.name}
+                width={60}
+                height={60}
+                style={{ objectFit: 'cover', borderRadius: 4, cursor: 'pointer' }}
+              />
+            </Image.PreviewGroup>
+
+          </div>
         );
       },
     },
@@ -42,7 +57,7 @@ const ProducsTable = ({
       key: 'name',
       dataIndex: 'name',
       render: (name: string, record: ProductType) => (
-        <Space direction='vertical' size={0}>
+        <Space orientation='vertical' size={0}>
           <Typography.Text strong>{name}</Typography.Text>
           <Tag color='blue'>{record.category?.name}</Tag>
         </Space>
@@ -52,24 +67,42 @@ const ProducsTable = ({
       title: 'Màu sắc',
       key: 'colors',
       width: 150,
-      render: (_: any, record: ProductType) => (
-        <Space wrap size={[4, 8]}>
-          {record.colors?.map((color, index) => (
-            <Tooltip title={color.color} key={index}>
-              <div
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: '50%',
-                  background: color.colorCode,
-                  border: '1px solid #ddd',
-                  cursor: 'pointer'
-                }}
-              />
-            </Tooltip>
-          ))}
-        </Space>
-      ),
+      render: (_: any, record: ProductType) => {
+        const selectedIndex = selectedColorMap[record.id] || 0;
+
+        return (
+          <Space wrap size={[8, 8]}>
+            {record.colors?.map((color, index) => (
+              <Tooltip title={color.color} key={index}>
+                <div
+                  onClick={() => setSelectedColorMap(prev => ({ ...prev, [record.id]: index }))}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: color.colorCode,
+                    border: selectedIndex === index
+                      ? '2px solid #1890ff'
+                      : '1px solid #ddd',
+                    cursor: 'pointer',
+                    padding: '2px',
+                    boxShadow: selectedIndex === index ? '0 0 4px rgba(24, 144, 255, 0.5)' : 'none',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {/* Chấm nhỏ bên trong để tạo hiệu ứng khi chọn */}
+                  {selectedIndex === index && (
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#fff', boxShadow: '0 0 2px rgba(0,0,0,0.5)' }} />
+                  )}
+                </div>
+              </Tooltip>
+            ))}
+          </Space>
+        );
+      },
     },
     {
       title: 'Kích thước',

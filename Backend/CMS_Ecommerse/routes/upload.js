@@ -3,18 +3,20 @@ const router = express.Router();
 const { uploadCloud, cloudinary } = require('../lib/cloudinary');
 
 // Route upload 1 ảnh
-router.post('/api/upload', uploadCloud.single('image'), (req, res) => {
+// URL thực tế: /api/upload/
+router.post('/', uploadCloud.single('image'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
     res.json({ 
         imageUrl: req.file.path,
-        publicId: req.file.filename // Đây là publicId trên Cloudinary
+        publicId: req.file.filename 
     });
 });
 
 // Route xóa ảnh trên Cloudinary
-router.delete('/api/upload', async (req, res) => {
+// URL thực tế: /api/upload/delete
+router.post('/delete', async (req, res) => {
     try {
         const { publicId } = req.body;
         if (!publicId) return res.status(400).json({ error: 'publicId is required' });
@@ -27,7 +29,8 @@ router.delete('/api/upload', async (req, res) => {
 });
 
 // Route upload nhiều ảnh cùng lúc
-router.post('/api/uploads', uploadCloud.array('images', 10), (req, res) => {
+// URL thực tế: /api/upload/multiple
+router.post('/multiple', uploadCloud.array('images', 10), (req, res) => {
     if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: 'No files uploaded' });
     }

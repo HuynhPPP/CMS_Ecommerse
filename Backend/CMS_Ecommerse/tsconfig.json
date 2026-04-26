@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "lib": ["ESNext"],
+    "moduleResolution": "node",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "allowJs": true,
+    "outDir": "./dist"
+  },
+  "include": ["prisma.config.ts", "**/*.ts"],
+  "exclude": ["node_modules"]
+}

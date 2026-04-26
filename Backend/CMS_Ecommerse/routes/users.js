@@ -2,22 +2,22 @@ const express = require('express');
 const UsersControllers = require('../controllers/users');
 const router = express.Router();
 
-// register
-router.post('/api/register', UsersControllers.register);
+// register: /api/users/register
+router.post('/register', UsersControllers.register);
 
-// login
-router.post('/api/login', UsersControllers.login);
+// login: /api/users/login
+router.post('/login', UsersControllers.login);
 
-// get users
-router.get('/api/users', UsersControllers.getUsers);
+// get users: /api/users/
+router.get('/', UsersControllers.getUsers);
 
-// get user by id
-router.get('/api/users/:id', UsersControllers.getUserById);
+// get user by id: /api/users/:id
+router.get('/:id', UsersControllers.getUserById);
 
-// update user
-router.put('/api/users/:id', UsersControllers.updateUser);
+// update user: /api/users/:id
+router.put('/:id', UsersControllers.updateUser);
 
-// delete user
-router.delete('/api/users/:id', UsersControllers.deleteUser);
+// delete user: /api/users/:id
+router.delete('/:id', UsersControllers.deleteUser);
 
 module.exports = router;

@@ -45,17 +45,20 @@ const AppSidebar = () => {
   };
 
   return (
-    <Sider trigger={null} collapsible>
-      <div className='text-xl font-bold text-blue-600 text-center py-5'>
-        ADMIN PANEL
+    <Sider trigger={null} collapsible style={{ height: '100vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div className='text-xl font-bold text-blue-600 text-center py-5'>
+          ADMIN PANEL
+        </div>
+        <Menu
+          theme={isDark ? 'dark' : 'light'}
+          mode="inline"
+          style={{ flex: 1, borderRight: 0 }}
+          defaultSelectedKeys={['dashboard']}
+          onClick={handleNavigate}
+          items={items}
+        />
       </div>
-      <Menu
-        theme={isDark ? 'dark' : 'light'}
-        className='h-screen'
-        defaultSelectedKeys={['1']}
-        onClick={handleNavigate}
-        items={items}
-      />
     </Sider>
   );
 };

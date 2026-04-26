@@ -7,9 +7,9 @@ const uploadRouter = require('./upload');
 const router = express.Router();
 
 // Mount routes
-router.use(categoriesRouter);
-router.use('/api/products', productsRouter);
-router.use(usersRouter);
-router.use(uploadRouter);
+router.use('/categories', categoriesRouter);
+router.use('/products', productsRouter);
+router.use('/users', usersRouter);
+router.use('/upload', uploadRouter);
 
 module.exports = router;

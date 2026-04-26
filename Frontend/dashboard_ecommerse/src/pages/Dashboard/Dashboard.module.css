@@ -1,0 +1,81 @@
+.dashboardContainer {
+  padding: 24px;
+  background: #f8fafc;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+.dashboardContainer.dark {
+  background: #141414;
+}
+
+.statCard {
+  border-radius: 16px;
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.statCard.dark {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.chartContainer {
+  padding: 20px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.chartContainer.dark {
+  background: #1f1f1f;
+  border: 1px solid #303030;
+}
+
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 20px;
+  width: fit-content;
+  margin-top: 8px;
+}
+
+.trendUp {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.trendUp.dark {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.trendDown {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.trendDown.dark {
+  background: rgba(239, 68, 68, 0.1);
+}

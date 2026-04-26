@@ -20,24 +20,26 @@ function SliderCommon({ data, isProductItem = false, slidesToShow = 1 }) {
   return (
     <Slider {...settings}>
       {data.map((item, index) => {
-        const srcImage = !item.image ? item.images[0] : item.image;
+        const firstColorImage = item.colors?.[0]?.images?.[0]?.imageUrl;
+        const srcImage = item.image || item.images?.[0] || firstColorImage || 'https://via.placeholder.com/150';
+        const displayPrice = item.price || item.colors?.[0]?.variants?.[0]?.price;
 
         return (
-          <>
+          <div key={index}>
             {isProductItem ? (
               <ProductItem
                 src={srcImage}
                 prevSrc={srcImage}
                 name={item.name}
-                price={item.price}
+                price={displayPrice}
                 details={item}
                 isHomePage={false}
                 slideItem={true}
               />
             ) : (
-              <img src={srcImage} key={index} alt='test' />
+              <img src={srcImage} alt='test' />
             )}
-          </>
+          </div>
         );
       })}
     </Slider>

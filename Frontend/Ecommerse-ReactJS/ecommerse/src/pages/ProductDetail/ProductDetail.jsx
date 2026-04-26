@@ -16,14 +16,13 @@ import SliderCommon from '@components/SliderCommon/SliderCommon';
 import ReactImageMagnifier from 'simple-image-magnifier/react';
 import cls from 'classnames';
 import { getDetailProduct, getRelatedProduct } from '@/apis/productsService';
-import LoadingTextCommon from '@components/LoadingTextCommon/LoadingTextCommon';
 import ProductDetailSkeleton from '@components/skeletons/ProductDetailSkeleton/ProductDetailSkeleton';
-import { toast } from 'react-toastify';
 import { handleAddProductToCartCommon } from '@/utils/helper';
 import { SideBarContext } from '@/contexts/SideBarProvider';
 import { ToastContext } from '@/contexts/ToastProvider';
 import Cookies from 'js-cookie';
 import { addProductToCart } from '@/apis/cartService';
+import LoadingTextCommon from '@components/LoadingTextCommon/LoadingTextCommon';
 
 function ProductDetail() {
   const {
@@ -61,6 +60,7 @@ function ProductDetail() {
 
   const [menuSelected, setMenuSelected] = useState(1);
   const [sizeSelected, setSizeSelected] = useState('');
+  const [colorSelected, setColorSelected] = useState(null); // Lưu object màu đang chọn
   const [quantity, setQuantity] = useState(1);
   const [data, setData] = useState();
   const [dataRelated, setDataRelated] = useState([]);
@@ -95,6 +95,11 @@ function ProductDetail() {
     setSizeSelected(size);
   };
 
+  const handleSelectColor = (color) => {
+    setColorSelected(color);
+    setSizeSelected(''); // Reset size khi đổi màu
+  };
+
   const handleClearSize = () => {
     setSizeSelected('');
   };
@@ -112,27 +117,29 @@ function ProductDetail() {
     try {
       const dataDetail = await getDetailProduct(id);
       setData(dataDetail);
+      if (dataDetail.colors?.length > 0) {
+        setColorSelected(dataDetail.colors[0]);
+      }
       setIsLoading(false);
     } catch (error) {
-      // toast.error('Failed to fetch product details');
       setData();
       setIsLoading(false);
     }
   };
 
   const fetchDataRelatedProduct = async (id) => {
-    setIsLoading(true);
     try {
       const dataRelated = await getRelatedProduct(id);
       setDataRelated(dataRelated);
-      setIsLoading(false);
     } catch (error) {
       setDataRelated([]);
-      setIsLoading(false);
     }
   };
 
   const handleAddToCart = () => {
+    if (!colorSelected || !sizeSelected) return;
+    
+    // Tìm variant ID nếu cần, hoặc gửi info trực tiếp tùy logic cartService
     handleAddProductToCartCommon(
       userId,
       setIsOpen,
@@ -142,20 +149,24 @@ function ProductDetail() {
       param.id,
       quantity,
       setIsLoadingBtn,
-      handleGetListProductsCart
+      handleGetListProductsCart,
+      colorSelected.color // Truyền thêm màu nếu helper hỗ trợ
     );
   };
 
   const handleBuyNow = () => {
-    const data = {
+    if (!colorSelected || !sizeSelected) return;
+
+    const body = {
       userId,
       productId: param.id,
       size: sizeSelected,
+      color: colorSelected.color,
       quantity,
     };
 
     setIsLoadingBtnBuyNow(true);
-    addProductToCart(data)
+    addProductToCart(body)
       .then((res) => {
         toast.success('Add Product to cart successfully');
         setIsLoadingBtnBuyNow(false);
@@ -176,218 +187,189 @@ function ProductDetail() {
     }
   }, [param.id]);
 
+  // Lấy giá hiển thị (lấy từ variant đầu tiên của màu đang chọn)
+  const currentPrice = colorSelected?.variants?.[0]?.price 
+    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(colorSelected.variants[0].price)
+    : 'Liên hệ';
+
   return (
     <div>
       <MyHeader />
-      <>
-        <div className={container}>
-          <MainLayout>
-            <div className={functionBox}>
-              <div>
-                Home &gt; <span className={specialText}>Men</span>
-              </div>
-              <div className={btnBack} onClick={() => handleBackPrePage()}>
-                &lt; Return to previous page
-              </div>
+      <div className={container}>
+        <MainLayout>
+          <div className={functionBox}>
+            <div>
+              Home &gt; <span className={specialText}>{data?.category?.name || 'Sản phẩm'}</span>
             </div>
+            <div className={btnBack} onClick={() => handleBackPrePage()}>
+              &lt; Return to previous page
+            </div>
+          </div>
 
-            {isLoading ? (
-              <ProductDetailSkeleton />
-            ) : (
-              <>
-                {!data ? (
-                  <div className={emptyProduct}>
-                    <div className={styles.errorContent}>
-                      <div className={styles.errorIcon}>
-                        <svg
-                          viewBox='0 0 24 24'
-                          fill='none'
-                          xmlns='http://www.w3.org/2000/svg'
-                        >
-                          <path
-                            d='M7 4V2H17V4H20C20.5523 4 21 4.44772 21 5V19C21 19.5523 20.5523 20 20 20H4C3.44772 20 3 19.5523 3 19V5C3 4.44772 3.44772 4 4 4H7ZM7 6H5V18H19V6H17V8H7V6ZM9 4V6H15V4H9Z'
-                            fill='currentColor'
-                          />
-                          <path
-                            d='M12 10L9 13H11V16H13V13H15L12 10Z'
-                            fill='currentColor'
-                            opacity='0.6'
-                          />
-                        </svg>
-                      </div>
-                      <h1 className={styles.errorTitle}>Product Not Found</h1>
-                      <p className={styles.errorDescription}>
-                        We couldn't find the product you're looking for. It may
-                        have been removed, sold out, or the link might be
-                        incorrect.
-                      </p>
-                      <div className={styles.errorActions}>
-                        <Button
-                          content='Go to Home'
-                          onClick={() => navigate('/')}
-                        />
-                        <button
-                          className={styles.btnSecondary}
-                          onClick={() => navigate(-1)}
-                        >
-                          Go Back
-                        </button>
-                      </div>
+          {isLoading ? (
+            <ProductDetailSkeleton />
+          ) : (
+            <>
+              {!data ? (
+                <div className={emptyProduct}>
+                  <div className={styles.errorContent}>
+                    <div className={styles.errorIcon}>
+                      <svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                        <path d='M7 4V2H17V4H20C20.5523 4 21 4.44772 21 5V19C21 19.5523 20.5523 20 20 20H4C3.44772 20 3 19.5523 3 19V5C3 4.44772 3.44772 4 4 4H7ZM7 6H5V18H19V6H17V8H7V6ZM9 4V6H15V4H9Z' fill='currentColor' />
+                        <path d='M12 10L9 13H11V16H13V13H15L12 10Z' fill='currentColor' opacity='0.6' />
+                      </svg>
+                    </div>
+                    <h1 className={styles.errorTitle}>Product Not Found</h1>
+                    <p className={styles.errorDescription}>We couldn't find the product you're looking for.</p>
+                    <div className={styles.errorActions}>
+                      <Button content='Go to Home' onClick={() => navigate('/')} />
                     </div>
                   </div>
-                ) : (
-                  <div className={contentSection}>
-                    <div className={imageBox}>
-                      {data?.images.map((src, index) => {
-                        return (
-                          <ReactImageMagnifier
-                            key={index}
-                            srcPreview={src}
-                            srcOriginal={src}
-                            width={295}
-                            height={350}
-                          />
-                        );
-                      })}
-                    </div>
-                    <div className={infoBox}>
-                      <h1>{data?.name}</h1>
-                      <p className={price}>{data?.price}</p>
-                      <p classnName={descreption}>{data?.description}</p>
+                </div>
+              ) : (
+                <div className={contentSection}>
+                  <div className={imageBox}>
+                    {colorSelected?.images?.map((img, index) => (
+                      <ReactImageMagnifier
+                        key={index}
+                        srcPreview={img.imageUrl}
+                        srcOriginal={img.imageUrl}
+                        width={295}
+                        height={350}
+                      />
+                    ))}
+                    {!colorSelected?.images?.length && <div style={{width: 295, height: 350, background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>No Image</div>}
+                  </div>
+                  
+                  <div className={infoBox}>
+                    <h1>{data?.name}</h1>
+                    <p className={price}>{currentPrice}</p>
+                    <p className={descreption}>{data?.description}</p>
 
-                      <p className={titleSize}>Size {sizeSelected}</p>
-                      <div className={boxSize}>
-                        {data?.size.map((item, index) => {
-                          return (
-                            <div
-                              key={index}
-                              className={cls(size, {
-                                [activeSize]: sizeSelected === item.name,
-                              })}
-                              onClick={() => handleSelectSize(item.name)}
-                            >
-                              {item.name}
-                            </div>
-                          );
-                        })}
-                        {sizeSelected && (
-                          <p className={btnClear} onClick={handleClearSize}>
-                            clear
-                          </p>
-                        )}
-                      </div>
-
-                      <div className={functionInfo}>
-                        <div className={boxCount}>
-                          <div onClick={() => handleSetQuantity('decrease')}>
-                            -
-                          </div>
-                          <div>{quantity}</div>
-                          <div onClick={() => handleSetQuantity('increase')}>
-                            +
-                          </div>
-                        </div>
-                        <div className={boxAddCart}>
-                          <Button
-                            content={
-                              <>
-                                {isLoadingBtn ? (
-                                  <LoadingTextCommon />
-                                ) : (
-                                  <>
-                                    <PiShoppingCart /> ADD TO CART
-                                  </>
-                                )}
-                              </>
-                            }
-                            customClassName={!sizeSelected ? disabledBtn : ''}
-                            onClick={handleAddToCart}
-                          />
-                        </div>
-                      </div>
-
-                      <div className={orSection}>
-                        <div></div>
-                        <span>OR</span>
-                        <div></div>
-                      </div>
-
-                      <div className={btnBuyNow}>
-                        <Button
-                          content={
-                            <>
-                              {isLoadingBtnBuyNow ? (
-                                <LoadingTextCommon />
-                              ) : (
-                                <>
-                                  <PiShoppingCart /> BUY NOW
-                                </>
-                              )}
-                            </>
-                          }
-                          customClassName={!sizeSelected ? disabledBtn : ''}
-                          onClick={handleBuyNow}
-                        />
-                      </div>
-
-                      <div className={addFunction}>
-                        <div>
-                          <BsHeart />
-                        </div>
-                        <div>
-                          <TfiReload />
-                        </div>
-                      </div>
-
-                      <div>
-                        <PaymentMethod />
-                      </div>
-
-                      <div className={infoProduct}>
-                        <div>
-                          Brand: <span>Adidas</span>
-                        </div>
-                        <div>
-                          SKU: <span>123456789</span>
-                        </div>
-                        <div>
-                          Category: <span>Men</span>
-                        </div>
-                      </div>
-
-                      {dataAccordionMenu.map((item, index) => (
-                        <AccordionMenu
+                    {/* Lựa chọn Màu sắc - Thêm mới để phù hợp API */}
+                    <p className={titleSize}>Color: {colorSelected?.color}</p>
+                    <div className={boxSize} style={{ marginBottom: '20px' }}>
+                      {data?.colors?.map((item, index) => (
+                        <div
                           key={index}
-                          titleMenu={item.titleMenu}
-                          contentAccordion={item.contentAccordion}
-                          onClick={() => handleSetMenuSelected(item.id)}
-                          isSelected={menuSelected === item.id}
+                          className={cls(size, {
+                            [activeSize]: colorSelected?.id === item.id,
+                          })}
+                          onClick={() => handleSelectColor(item)}
+                          style={{
+                            background: item.colorCode,
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            border: colorSelected?.id === item.id ? '2px solid #333' : '1px solid #ddd',
+                            padding: 0
+                          }}
                         />
                       ))}
                     </div>
+
+                    <p className={titleSize}>Size: {sizeSelected}</p>
+                    <div className={boxSize}>
+                      {colorSelected?.variants?.map((item, index) => (
+                        <div
+                          key={index}
+                          className={cls(size, {
+                            [activeSize]: sizeSelected === item.size,
+                          })}
+                          onClick={() => handleSelectSize(item.size)}
+                        >
+                          {item.size}
+                        </div>
+                      ))}
+                      {sizeSelected && (
+                        <p className={btnClear} onClick={handleClearSize}>
+                          clear
+                        </p>
+                      )}
+                    </div>
+
+                    <div className={functionInfo}>
+                      <div className={boxCount}>
+                        <div onClick={() => handleSetQuantity('decrease')}>-</div>
+                        <div>{quantity}</div>
+                        <div onClick={() => handleSetQuantity('increase')}>+</div>
+                      </div>
+                      <div className={boxAddCart}>
+                        <Button
+                          content={
+                            isLoadingBtn ? <LoadingTextCommon /> : (
+                              <>
+                                <PiShoppingCart /> ADD TO CART
+                              </>
+                            )
+                          }
+                          customClassName={(!sizeSelected || !colorSelected) ? disabledBtn : ''}
+                          onClick={handleAddToCart}
+                        />
+                      </div>
+                    </div>
+
+                    <div className={orSection}>
+                      <div /><span>OR</span><div />
+                    </div>
+
+                    <div className={btnBuyNow}>
+                      <Button
+                        content={
+                          isLoadingBtnBuyNow ? <LoadingTextCommon /> : (
+                            <>
+                              <PiShoppingCart /> BUY NOW
+                            </>
+                          )
+                        }
+                        customClassName={(!sizeSelected || !colorSelected) ? disabledBtn : ''}
+                        onClick={handleBuyNow}
+                      />
+                    </div>
+
+                    <div className={addFunction}>
+                      <div><BsHeart /></div>
+                      <div><TfiReload /></div>
+                    </div>
+
+                    <div>
+                      <PaymentMethod />
+                    </div>
+
+                    <div className={infoProduct}>
+                      <div>Brand: <span>{data?.brand || 'N/A'}</span></div>
+                      <div>SKU: <span>{data?.id}</span></div>
+                      <div>Category: <span>{data?.category?.name}</span></div>
+                    </div>
+
+                    {dataAccordionMenu.map((item, index) => (
+                      <AccordionMenu
+                        key={index}
+                        titleMenu={item.titleMenu}
+                        contentAccordion={item.contentAccordion}
+                        onClick={() => handleSetMenuSelected(item.id)}
+                        isSelected={menuSelected === item.id}
+                      />
+                    ))}
                   </div>
-                )}
-              </>
-            )}
+                </div>
+              )}
+            </>
+          )}
 
-            {/* RELATED PRODUCTS */}
-            {dataRelated.length ? (
-              <div className={containerRelated}>
-                <h2>Related products</h2>
-
-                <SliderCommon
-                  data={dataRelated}
-                  isProductItem
-                  slidesToShow={4}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-          </MainLayout>
-        </div>
-      </>
-      {/* <MyFooter /> */}
+          {/* RELATED PRODUCTS */}
+          {dataRelated.length > 0 && (
+            <div className={containerRelated}>
+              <h2>Related products</h2>
+              <SliderCommon
+                data={dataRelated}
+                isProductItem
+                slidesToShow={4}
+              />
+            </div>
+          )}
+        </MainLayout>
+      </div>
       <MyFooter />
     </div>
   );

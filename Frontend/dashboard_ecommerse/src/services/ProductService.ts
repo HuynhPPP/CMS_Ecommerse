@@ -1,4 +1,4 @@
-import type { ProductPayload, ProductResponse } from '../pages/Products/Type';
+import type { ProductPayload, ProductResponse, ProductType } from '../pages/Products/Type';
 import axiosInstance from '../utils/axiosInstance';
 
 const ProductService = {
@@ -13,6 +13,14 @@ const ProductService = {
   updateProduct: async (id: number, data: ProductPayload) => {
     try {
       const res = await axiosInstance.put(`/products/${id}`, data);
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+  getProductById: async (id: number): Promise<ProductType> => {
+    try {
+      const res = await axiosInstance.get<ProductType>(`/products/${id}`);
       return res.data;
     } catch (error) {
       throw error;

@@ -119,6 +119,45 @@ const productsController = {
     }
   },
 
+  getProductById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const product = await prisma.products.findUnique({
+        where: {
+          id: parseInt(id, 10),
+          isDeleted: false,
+        },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          colors: {
+            include: {
+              images: {
+                orderBy: {
+                  order: 'asc',
+                },
+              },
+              variants: true,
+            },
+          },
+        },
+      });
+
+      if (!product) {
+        return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+      }
+
+      return res.status(200).json(product);
+    } catch (error) {
+      console.error('Error fetching product detail:', error);
+      return res.status(500).json({ message: 'Failed to fetch product detail' });
+    }
+  },
+
   updateProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -383,6 +422,51 @@ const productsController = {
     } catch (error) {
       console.log('Lỗi khi xoá sản phẩm:', error);
       return res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  getRelatedProducts: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      // 1. Lấy thông tin sản phẩm hiện tại để biết categoryId
+      const currentProduct = await prisma.products.findUnique({
+        where: { id: parseInt(id, 10) },
+        select: { categoryId: true },
+      });
+
+      if (!currentProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      // 2. Lấy danh sách sản phẩm cùng danh mục, loại trừ chính nó
+      const relatedProducts = await prisma.products.findMany({
+        where: {
+          categoryId: currentProduct.categoryId,
+          id: { not: parseInt(id, 10) }, // Loại trừ sản phẩm đang xem
+          isDeleted: false,
+        },
+        take: 8, // Lấy tối đa 8 sản phẩm liên quan
+        orderBy: {
+          id: 'desc',
+        },
+        include: {
+          category: true,
+          colors: {
+            include: {
+              images: {
+                orderBy: { order: 'asc' },
+              },
+              variants: true,
+            },
+          },
+        },
+      });
+
+      return res.status(200).json({ relatedProducts });
+    } catch (error) {
+      console.error('Error fetching related products:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   },
 };

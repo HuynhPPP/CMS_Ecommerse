@@ -21,7 +21,7 @@ export const StoreProvider = ({ children }) => {
     if (userId) {
       getInfo(userId)
         .then((res) => {
-          setUserInfo(res.data.data);
+          setUserInfo(res.data);
         })
         .catch((err) => {
           console.log(err);

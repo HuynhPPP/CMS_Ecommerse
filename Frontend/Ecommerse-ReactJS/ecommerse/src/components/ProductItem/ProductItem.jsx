@@ -73,7 +73,7 @@ function ProductItem({
       setType,
       toast,
       sizeChoose,
-      details._id,
+      details.id,
       1,
       setIsLoading,
       handleGetListProductsCart
@@ -87,9 +87,16 @@ function ProductItem({
   };
 
   const handleNavigateToProductDetail = () => {
-    console.log(details._id);
-    const path = `/product/${details._id}`;
+    console.log(details.id);
+    const path = `/product/${details.id}`;
     navigate(path);
+  };
+
+  const getAvailableSizes = () => {
+    if (!details.colors) return [];
+    return Array.from(
+      new Set(details.colors.flatMap(c => c.variants.map(v => v.size)))
+    );
   };
 
   useEffect(() => {
@@ -105,6 +112,8 @@ function ProductItem({
       setIsShowGrid(true);
     }
   }, [slideItem]);
+
+  const availableSizes = getAvailableSizes();
 
   return (
     <div className={isShowGrid ? '' : containerItem}>
@@ -154,18 +163,21 @@ function ProductItem({
           marginTop: slideItem && '10px',
         }}
       >
-        {!isHomePage && (
+        {!isHomePage && availableSizes.length > 0 && (
           <div className={boxSize}>
-            {details.size.map((item, index) => {
+            {availableSizes.map((sizeName, index) => {
               return (
                 <div
                   key={index}
                   className={cls(size, {
-                    [isActiveSize]: sizeChoose === item.name,
+                    [isActiveSize]: sizeChoose === sizeName,
                   })}
-                  onClick={() => handleChooseSize(item.name)}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Chặn sự kiện click nhảy vào trang chi tiết
+                    handleChooseSize(sizeName);
+                  }}
                 >
-                  {item.name}
+                  {sizeName}
                 </div>
               );
             })}

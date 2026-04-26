@@ -1,7 +1,56 @@
 const prisma = require('../lib/prisma');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const UsersControllers = {
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: 'Vui lòng nhập Email và Mật khẩu' });
+      }
+
+      // 1. Tìm user theo email
+      const user = await prisma.user.findFirst({
+        where: { email, isDeleted: false },
+      });
+
+      if (!user) {
+        return res.status(400).json({ message: 'Email hoặc Mật khẩu không chính xác' });
+      }
+
+      // 2. Kiểm tra trạng thái tài khoản
+      if (!user.isActive) {
+        return res.status(403).json({ message: 'Tài khoản của bạn đã bị khóa hoặc chưa được kích hoạt' });
+      }
+
+      // 3. Kiểm tra mật khẩu
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: 'Email hoặc Mật khẩu không chính xác' });
+      }
+
+      // 3. Tạo JWT Token
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET || 'mysecretkey',
+        { expiresIn: '7d' }
+      );
+
+      // 4. Trả về kết quả
+      const { password: _, ...userWithoutPassword } = user;
+      return res.status(200).json({
+        message: 'Đăng nhập thành công',
+        user: userWithoutPassword,
+        token,
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      return res.status(500).json({ message: 'Lỗi hệ hệ thống' });
+    }
+  },
+
   register: async (req, res) => {
     try {
       const { username, email, password } = req.body;
@@ -11,7 +60,7 @@ const UsersControllers = {
       }
 
       // 1. Kiểm tra username hoặc email đã tồn tại chưa
-      const existingUser = await prisma.users.findFirst({
+      const existingUser = await prisma.user.findFirst({
         where: {
           OR: [{ email }, { username }],
           isDeleted: false,
@@ -28,7 +77,7 @@ const UsersControllers = {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // 3. Tạo user mới
-      const user = await prisma.users.create({
+      const user = await prisma.user.create({
         data: {
           username,
           email,

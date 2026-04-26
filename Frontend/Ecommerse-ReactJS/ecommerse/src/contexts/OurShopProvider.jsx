@@ -47,10 +47,10 @@ export const OurShopProvider = ({ children }) => {
     getProducts(query)
       .then((res) => {
         setProducts((prev) => {
-          return [...prev, ...res.contents];
+          return [...prev, ...(res.data || [])];
         });
-        setPage(+res.page);
-        setTotal(res.total);
+        setPage(+res.meta?.page || 1);
+        setTotal(res.meta?.total || 0);
         setIsLoadMore(false);
       })
       .catch((err) => {
@@ -95,8 +95,8 @@ export const OurShopProvider = ({ children }) => {
     setTimeout(() => {
       getProducts(query)
         .then((res) => {
-          setProducts(res.contents);
-          setTotal(res.total);
+          setProducts(res.data || []);
+          setTotal(res.meta?.total || 0);
           setIsLoading(false);
         })
         .catch((err) => {

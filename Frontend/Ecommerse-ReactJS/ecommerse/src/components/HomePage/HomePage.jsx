@@ -23,7 +23,7 @@ function HomePage() {
     setIsLoading(true);
     getProducts(query)
       .then((res) => {
-        setListProducts(res.contents);
+        setListProducts(res.data || []);
         setIsLoading(false);
       })
       .catch((err) => {

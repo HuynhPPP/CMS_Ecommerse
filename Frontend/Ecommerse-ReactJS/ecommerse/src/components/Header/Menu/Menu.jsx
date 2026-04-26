@@ -53,7 +53,10 @@ function Menu({ content, href }) {
         <div
           onMouseLeave={() => setIsShowSubMenu(false)}
           className={subMenu}
-          onClick={handleLogOut}
+          onClick={(e) => {
+            e.stopPropagation(); // Chặn sự kiện click nhảy vào thẻ cha
+            handleLogOut();
+          }}
         >
           LOG OUT
         </div>

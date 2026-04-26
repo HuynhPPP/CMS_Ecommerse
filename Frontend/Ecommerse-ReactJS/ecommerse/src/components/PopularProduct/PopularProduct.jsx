@@ -22,16 +22,22 @@ function PopularProduct({ data, isLoading = false }) {
           </>
         ) : (
           // Show actual products when loaded
-          data.map((item) => (
-            <ProductItem
-              key={item._id}
-              src={item.images[0]}
-              prevSrc={item.images[1]}
-              name={item.name}
-              price={item.price}
-              details={item}
-            />
-          ))
+          data.map((item) => {
+            const firstColor = item.colors?.[0];
+            const images = firstColor?.images || [];
+            const variants = firstColor?.variants || [];
+            
+            return (
+              <ProductItem
+                key={item.id}
+                src={images[0]?.imageUrl}
+                prevSrc={images[1]?.imageUrl || images[0]?.imageUrl}
+                name={item.name}
+                price={variants[0]?.price}
+                details={item}
+              />
+            );
+          })
         )}
       </div>
     </MainLayout>

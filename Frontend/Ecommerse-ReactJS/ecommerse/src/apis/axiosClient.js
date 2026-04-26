@@ -2,8 +2,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const axiosClient = axios.create({
-  baseURL: 'https://be-project-reactjs.onrender.com/api/v1',
-  timeout: 1000000,
+  baseURL: 'http://localhost:8386/api', // Kết nối với Backend local của bạn
+  timeout: 100000,
   headers: {
     'Content-Type': 'application/json',
   },

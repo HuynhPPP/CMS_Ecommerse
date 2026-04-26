@@ -20,10 +20,13 @@ function Login() {
 
   const formik = useFormik({
     initialValues: {
+      username: '',
       email: '',
       password: '',
+      cfmpassword: '',
     },
     validationSchema: Yup.object({
+      username: isRegister ? Yup.string().required('Username is required') : Yup.string(),
       email: Yup.string().email('Invalid email').required('Email is required'),
       password: Yup.string()
         .min(6, 'Password must be at least at 6 characters')
@@ -33,38 +36,34 @@ function Login() {
         'Password must match'
       ),
     }),
-    onSubmit: async (values) => {
-      if (isLoading) return;
-      const { email: username, password } = values;
+    onSubmit: (values) => {
       setIsLoading(true);
-
       if (isRegister) {
-        await register({ username, password })
+        register(values)
           .then((res) => {
-            toast.success(res.data.message);
             setIsLoading(false);
+            toast.success(res.data.message || 'Registration successful!');
+            setIsRegister(false); // Chuyển sang màn đăng nhập
           })
           .catch((err) => {
-            toast.error(err.response.data.message);
             setIsLoading(false);
+            toast.error(err.response?.data?.message || 'Registration failed');
           });
-      }
-
-      if (!isRegister) {
-        await signIn({ username, password })
+      } else {
+        signIn(values)
           .then((res) => {
             setIsLoading(false);
-            const { id, token, refreshToken } = res.data;
-            setUserId(id);
+            const { token, user } = res.data;
             Cookies.set('token', token);
-            Cookies.set('refreshToken', refreshToken);
-            Cookies.set('userId', id);
+            Cookies.set('userId', user.id);
+            setUserId(user.id);
             setIsOpen(false);
-            handleGetListProductsCart(id, 'cart');
+            handleGetListProductsCart(user.id, 'cart');
             toast.success('Sign in successfully!');
           })
           .catch((err) => {
             setIsLoading(false);
+            toast.error(err.response?.data?.message || 'Login failed');
           });
       }
     },
@@ -80,6 +79,15 @@ function Login() {
       <div className={title}>{isRegister ? 'SIGN UP' : 'SIGN IN'}</div>
 
       <form onSubmit={formik.handleSubmit}>
+        {isRegister && (
+          <InputCommon
+            id='username'
+            label='Username'
+            type='text'
+            isRequired
+            formik={formik}
+          />
+        )}
         <InputCommon
           id='email'
           label='Email'

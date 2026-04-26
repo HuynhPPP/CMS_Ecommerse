@@ -1,0 +1,194 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  min-height: calc(100vh - 83px - 200px); // viewport - header - footer
+  @include flex_box_custom(center, center, 0px);
+  padding: 80px 0;
+}
+
+.errorContent {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 60px 40px;
+  animation: fadeInUp 0.6s ease-out;
+
+  .errorIcon {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 40px;
+    background: $primary_color;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+    svg {
+      width: 70px;
+      height: 70px;
+      color: $white_color;
+      animation: float 3s ease-in-out infinite;
+    }
+  }
+
+  .errorCode {
+    font-size: 120px;
+    font-weight: 700;
+    color: $four_color;
+    margin: 0 0 20px 0;
+    line-height: 1;
+    letter-spacing: -5px;
+    animation: slideInDown 0.8s ease-out;
+  }
+
+  .errorTitle {
+    font-size: 36px;
+    font-weight: 600;
+    color: $primary_color;
+    margin: 0 0 20px 0;
+  }
+
+  .errorDescription {
+    font-size: 16px;
+    line-height: 1.6;
+    color: $secondary_color;
+    margin: 0 0 50px 0;
+    font-weight: 400;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .errorActions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    button {
+      padding: 14px 36px;
+      font-size: 15px;
+      font-weight: 500;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      outline: none;
+
+      &:first-child {
+        background: $primary_color;
+        color: $white_color;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+        &:hover {
+          background: $four_color;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+      }
+    }
+
+    .btnSecondary {
+      background: $white_color;
+      color: $primary_color;
+      border: 2px solid $primary_color !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        background: $primary_color;
+        color: $white_color;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 40px 0;
+  }
+
+  .errorContent {
+    padding: 40px 24px;
+
+    .errorIcon {
+      width: 100px;
+      height: 100px;
+
+      svg {
+        width: 50px;
+        height: 50px;
+      }
+    }
+
+    .errorCode {
+      font-size: 80px;
+      letter-spacing: -3px;
+    }
+
+    .errorTitle {
+      font-size: 28px;
+    }
+
+    .errorDescription {
+      font-size: 14px;
+    }
+
+    .errorActions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

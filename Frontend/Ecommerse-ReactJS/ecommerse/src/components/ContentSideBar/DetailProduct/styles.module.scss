@@ -1,0 +1,119 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  padding: 20px;
+
+  .title {
+    font-size: 24px;
+    color: $four_color;
+    margin-top: 20px;
+  }
+
+  .price {
+    font-size: 20px;
+    color: $secondary_color;
+    margin: 10px 0;
+  }
+
+  .description {
+    font-size: 16px;
+    color: $thr_color;
+  }
+
+  .label {
+    margin-top: 12px;
+    font-size: 16px;
+    color: $thr_color;
+    margin-bottom: 5px;
+  }
+
+  .boxSize {
+    @include flex_box_custom(flex-start, center, 10px);
+
+    .size {
+      padding: 9px 12px;
+      border: 1px solid #e1e1e1;
+      font-size: 12px;
+      cursor: pointer;
+
+      &:hover {
+        border: 1px solid $primary_color;
+      }
+    }
+
+    .isActive {
+      border: 1px solid $primary_color;
+    }
+
+    .btnClear {
+      font-size: 13px;
+      color: $four_color;
+      cursor: pointer;
+      padding-top: 12px;
+      text-decoration: underline;
+    }
+  }
+
+  .boxAddToCart {
+    @include flex_box_custom(flex-start, center, 10px);
+
+    margin-top: 20px;
+
+    select {
+      width: 65px;
+      height: 36px;
+    }
+
+    button {
+      font-size: 12px;
+      width: 250px;
+    }
+  }
+
+  .boxOr {
+    @include flex_box_custom(center, center, 10px);
+
+    margin: 15px 0;
+
+    .line {
+      width: 100px;
+      height: 1px;
+      background-color: #e1e1e1;
+      flex-grow: 1;
+    }
+
+    .or {
+      font-size: 12px;
+      color: $thr_color;
+    }
+  }
+
+  .btnSelectOptions {
+    @include btn(100%, 37px, 3px, $primary_color);
+    font-size: 12px;
+    font-weight: 300;
+    cursor: pointer;
+    color: $white_color;
+  }
+
+  .boxAddOther {
+    @include flex_box_custom(flex-start, center, 10px);
+
+    margin-top: 12px;
+    color: $four_color;
+    cursor: pointer;
+  }
+
+  .boxFooter {
+    margin-top: 12px;
+
+    span {
+      color: $secondary_color;
+    }
+
+    .boxLinkFooter {
+      padding: 10px 10px;
+    }
+  }
+}

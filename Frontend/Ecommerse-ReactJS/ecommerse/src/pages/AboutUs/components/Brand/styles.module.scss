@@ -1,0 +1,55 @@
+.brandsContainer {
+  margin-top: 60px;
+  position: relative;
+  padding: 20px 10px;
+
+  // Style for brand logos
+  :global(.swiper-slide) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    img {
+      height: auto;
+      object-fit: contain;
+      filter: grayscale(100%);
+      transition: filter 0.3s ease;
+
+      &:hover {
+        filter: grayscale(0%);
+      }
+    }
+  }
+
+  // Navigation arrows styling
+  :global(.swiper-button-prev),
+  :global(.swiper-button-next) {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: #333;
+    width: 25px;
+    height: 25px;
+
+    &::after {
+      font-size: 16px;
+      font-weight: normal;
+    }
+  }
+
+  // Show arrows on hover
+  &:hover {
+    :global(.swiper-button-prev),
+    :global(.swiper-button-next) {
+      opacity: 0.5;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}

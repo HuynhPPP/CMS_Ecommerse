@@ -1,0 +1,30 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .labelcls {
+    color: $thr_color;
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+
+  .error {
+    border-color: red;
+  }
+
+  input,
+  select {
+    height: 37px;
+    padding: 0px 15px;
+    border: 1px solid #e1e1e1;
+
+    &:focus {
+      outline: #333;
+      border: 1px solid #333;
+    }
+  }
+}

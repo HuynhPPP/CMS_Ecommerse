@@ -2,6 +2,9 @@ const express = require('express');
 const UsersControllers = require('../controllers/users');
 const router = express.Router();
 
+// register
+router.post('/api/register', UsersControllers.register);
+
 // get users
 router.get('/api/users', UsersControllers.getUsers);
 

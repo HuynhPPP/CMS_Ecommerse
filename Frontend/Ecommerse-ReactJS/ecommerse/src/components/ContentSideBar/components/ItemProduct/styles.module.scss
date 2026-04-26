@@ -1,0 +1,68 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  @include flex_box_custom(unset, flex-start, 25px);
+
+  margin-top: 20px;
+  padding: 20px;
+  transition: 0.3s all ease;
+  position: relative;
+  overflow: hidden;
+
+  img {
+    width: 70px;
+  }
+
+  .boxClose {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    transform: translateX(30px);
+    transition: 0.3s all ease;
+  }
+
+  .boxContent {
+    @include flex_box_custom(center, flex-start, 0px);
+    flex-direction: column;
+
+    .title {
+      font-size: 16px;
+      color: $primary-color;
+      cursor: pointer;
+    }
+
+    .size {
+      color: #9e9e9e;
+      margin-top: 7px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .price {
+      font-size: 14px;
+      color: $four_color;
+      margin-bottom: 7px;
+    }
+  }
+
+  .overlayLoading {
+    @include flex_box_custom(center, center, 0px);
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  &:hover {
+    background-color: #f7f7f7;
+
+    .boxClose {
+      transform: translateX(0);
+    }
+  }
+}

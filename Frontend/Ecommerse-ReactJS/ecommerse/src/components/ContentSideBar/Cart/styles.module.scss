@@ -1,0 +1,60 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  @include flex_box_custom(space-between, unset, 0px);
+
+  flex-direction: column;
+  padding: 20px 20px 0 20px;
+  height: 95vh;
+
+  .total {
+    @include flex_box_custom(space-between, center);
+  }
+
+  .boxBtn {
+    @include flex_box_custom(space-between, unset, 10px);
+    flex-direction: column;
+  }
+
+  button {
+    width: 100% !important;
+  }
+
+  .containerListProductCart {
+    position: relative;
+
+    .overlayLoading {
+      @include flex_box_custom(center, center, 0px);
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .boxEmptyCart {
+    text-align: center;
+    font-size: 14px;
+    color: $four_color;
+    margin-top: 30px;
+
+    .boxBtnEmptyCart {
+      width: 162px;
+      margin: 20px auto;
+    }
+  }
+
+  .containerListItemCart {
+    @include flex_box_custom(space-between, unset, 0px);
+    flex-direction: column;
+    flex-grow: 1;
+  }
+}
+
+.isEmptyCart {
+  justify-content: unset;
+}

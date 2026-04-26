@@ -1,0 +1,39 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  border-bottom: 1px solid #e1e1e1;
+
+  .title {
+    @include flex_box_custom(space-between, center, 10px);
+    padding: 25px 0;
+    color: $primary_color;
+    font-size: 16px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $secondary_color;
+    }
+  }
+
+  .activeTitle {
+    color: $primary_color;
+  }
+
+  .contentMenu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0;
+    color: $thr_color;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .isVisibility {
+    max-height: 500px;
+    padding-bottom: 25px;
+  }
+}

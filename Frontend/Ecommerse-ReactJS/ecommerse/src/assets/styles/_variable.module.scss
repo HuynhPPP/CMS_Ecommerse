@@ -1,0 +1,80 @@
+// ============================================
+// COLOR VARIABLES
+// ============================================
+$primary_color: #333;
+$secondary_color: #888;
+$thr_color: #555;
+$four_color: #222;
+$white_color: #fff;
+$sub_color: #404040;
+
+// ============================================
+// RESPONSIVE BREAKPOINTS
+// ============================================
+$breakpoint-mobile-sm: 375px; // Small mobile (iPhone SE)
+$breakpoint-mobile: 480px; // Mobile devices
+$breakpoint-tablet: 768px; // Tablets
+$breakpoint-desktop: 1024px; // Desktop
+$breakpoint-wide: 1250px; // Wide screens
+
+// ============================================
+// MOBILE-SPECIFIC SPACING
+// ============================================
+// Base spacing scale
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// Mobile padding/margin
+$mobile-padding-sm: 12px;
+$mobile-padding-md: 16px;
+$mobile-padding-lg: 20px;
+
+// Desktop padding/margin
+$desktop-padding-sm: 20px;
+$desktop-padding-md: 30px;
+$desktop-padding-lg: 40px;
+
+// ============================================
+// TOUCH TARGET SIZES
+// ============================================
+$touch-target-min: 44px; // Minimum touch target (iOS/Android guidelines)
+$touch-target-comfortable: 48px; // Comfortable touch target
+$touch-target-icon: 40px; // Icon button size
+
+// ============================================
+// RESPONSIVE TYPOGRAPHY
+// ============================================
+// Mobile font sizes
+$font-size-mobile-xs: 12px;
+$font-size-mobile-sm: 14px;
+$font-size-mobile-base: 16px;
+$font-size-mobile-lg: 18px;
+$font-size-mobile-xl: 20px;
+$font-size-mobile-2xl: 24px;
+$font-size-mobile-3xl: 28px;
+
+// Desktop font sizes
+$font-size-desktop-xs: 12px;
+$font-size-desktop-sm: 14px;
+$font-size-desktop-base: 16px;
+$font-size-desktop-lg: 20px;
+$font-size-desktop-xl: 24px;
+$font-size-desktop-2xl: 32px;
+$font-size-desktop-3xl: 40px;
+
+// Line heights
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.75;
+
+// ============================================
+// CONTAINER WIDTHS
+// ============================================
+$container-mobile: 100%;
+$container-tablet: 720px;
+$container-desktop: 960px;
+$container-wide: 1250px;

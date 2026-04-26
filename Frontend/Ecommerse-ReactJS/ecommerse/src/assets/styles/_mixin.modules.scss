@@ -1,0 +1,234 @@
+@use './variable.module.scss' as *;
+
+// ============================================
+// EXISTING MIXINS
+// ============================================
+@mixin radius_common($radius: 10px) {
+  border-radius: $radius;
+}
+
+@mixin flex_box_custom($x, $y, $gap: 10px) {
+  display: flex;
+  justify-content: $x;
+  align-items: $y;
+  gap: $gap;
+}
+
+@mixin btn($w, $h, $radius, $color: #fff) {
+  border: 1px solid #e1e1e1;
+  outline: none;
+  width: $w;
+  height: $h;
+  background-color: $color;
+  @include radius_common($radius);
+}
+
+// ============================================
+// RESPONSIVE MEDIA QUERY MIXINS
+// ============================================
+
+// Mobile-first approach: styles apply to mobile by default,
+// then override for larger screens
+
+@mixin mobile-sm {
+  @media (max-width: #{$breakpoint-mobile-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (max-width: #{$breakpoint-mobile - 1px}) {
+    @content;
+  }
+}
+
+@mixin mobile-only {
+  @media (max-width: #{$breakpoint-tablet - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+
+@mixin tablet-only {
+  @media (min-width: $breakpoint-tablet) and (max-width: #{$breakpoint-desktop - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+@mixin wide {
+  @media (min-width: $breakpoint-wide) {
+    @content;
+  }
+}
+
+// Custom breakpoint
+@mixin respond-to($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// ============================================
+// FLUID TYPOGRAPHY MIXIN
+// ============================================
+@mixin fluid-font(
+  $min-size,
+  $max-size,
+  $min-width: $breakpoint-mobile,
+  $max-width: $breakpoint-wide
+) {
+  font-size: $min-size;
+
+  @media (min-width: $min-width) {
+    font-size: calc(
+      #{$min-size} + (#{$max-size} - #{$min-size}) * ((100vw - #{$min-width}) /
+            (#{$max-width} - #{$min-width}))
+    );
+  }
+
+  @media (min-width: $max-width) {
+    font-size: $max-size;
+  }
+}
+
+// ============================================
+// TOUCH-FRIENDLY BUTTON MIXIN
+// ============================================
+@mixin touch-button($min-size: $touch-target-min) {
+  min-width: $min-size;
+  min-height: $min-size;
+  padding: $spacing-sm $spacing-md;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  // Ensure text is centered
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  // Prevent text selection on double tap
+  -webkit-touch-callout: none;
+}
+
+// ============================================
+// RESPONSIVE GRID MIXIN
+// ============================================
+@mixin responsive-grid(
+  $mobile-cols: 1,
+  $tablet-cols: 2,
+  $desktop-cols: 3,
+  $gap: $spacing-md
+) {
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat($mobile-cols, 1fr);
+
+  @include tablet {
+    grid-template-columns: repeat($tablet-cols, 1fr);
+  }
+
+  @include desktop {
+    grid-template-columns: repeat($desktop-cols, 1fr);
+  }
+}
+
+// ============================================
+// RESPONSIVE CONTAINER MIXIN
+// ============================================
+@mixin container($padding: $mobile-padding-md) {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $padding;
+  padding-right: $padding;
+
+  @include tablet {
+    max-width: $container-tablet;
+    padding-left: $desktop-padding-sm;
+    padding-right: $desktop-padding-sm;
+  }
+
+  @include desktop {
+    max-width: $container-desktop;
+    padding-left: $desktop-padding-md;
+    padding-right: $desktop-padding-md;
+  }
+
+  @include wide {
+    max-width: $container-wide;
+  }
+}
+
+// ============================================
+// RESPONSIVE FLEX MIXIN
+// ============================================
+@mixin responsive-flex(
+  $mobile-direction: column,
+  $desktop-direction: row,
+  $gap: $spacing-md
+) {
+  display: flex;
+  flex-direction: $mobile-direction;
+  gap: $gap;
+
+  @include desktop {
+    flex-direction: $desktop-direction;
+  }
+}
+
+// ============================================
+// HIDE/SHOW UTILITIES
+// ============================================
+@mixin hide-on-mobile {
+  @include mobile-only {
+    display: none !important;
+  }
+}
+
+@mixin hide-on-desktop {
+  @include desktop {
+    display: none !important;
+  }
+}
+
+@mixin show-on-mobile {
+  display: none !important;
+
+  @include mobile-only {
+    display: block !important;
+  }
+}
+
+// ============================================
+// ASPECT RATIO MIXIN
+// ============================================
+@mixin aspect-ratio($width, $height) {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: ($height / $width) * 100%;
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

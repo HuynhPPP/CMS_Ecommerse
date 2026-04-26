@@ -1,0 +1,156 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+// Shimmer animation mixin
+@mixin skeleton-animate {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e8e8e8 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// Main container matching ProductDetail .contentSection
+.skeletonContainer {
+  @include flex_box_custom(unset, flex-start, 20px);
+  padding-top: 20px;
+}
+
+// Image Gallery - matches .imageBox
+.skeletonImageGallery {
+  max-width: 610px;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skeletonImage {
+  width: calc(50% - 5px); // 2 columns with gap
+  height: 350px;
+  border-radius: 3px;
+  @include skeleton-animate;
+}
+
+// Info Section - matches .infoBox
+.skeletonInfo {
+  flex-grow: 1;
+}
+
+// Title - matches h1
+.skeletonTitle {
+  height: 24px;
+  width: 70%;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+// Price - matches .price
+.skeletonPrice {
+  height: 20px;
+  width: 30%;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+// Description - matches .descreption
+.skeletonDescription {
+  height: 14px;
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+// Size Label - matches .titleSize
+.skeletonSizeLabel {
+  height: 14px;
+  width: 20%;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+// Size Box - matches .boxSize
+.skeletonSizeBox {
+  @include flex_box_custom(flex-start, center, 10px);
+  margin-bottom: 20px;
+}
+
+.skeletonSize {
+  width: 45px;
+  height: 30px;
+  border-radius: 2px;
+  @include skeleton-animate;
+}
+
+// Function Box - matches .functionInfo
+.skeletonFunctionBox {
+  @include flex_box_custom(space-between, center, 10px);
+  margin-top: 20px;
+}
+
+.skeletonQuantity {
+  width: 100px;
+  height: 42px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+.skeletonButton {
+  flex-grow: 1;
+  height: 42px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+// Divider - matches .orSection
+.skeletonDivider {
+  @include flex_box_custom(center, center, 0px);
+  margin: 20px 0;
+
+  div {
+    width: 100%;
+    height: 1px;
+    background-color: #e1e1e1;
+  }
+
+  span {
+    font-size: 12px;
+    color: $secondary_color;
+    padding: 0 10px;
+  }
+}
+
+// Icon Box - matches .addFunction
+.skeletonIconBox {
+  @include flex_box_custom(unset, center, 10px);
+  margin: 30px 0;
+}
+
+.skeletonIcon {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  @include skeleton-animate;
+}
+
+// Info Lines - matches .infoProduct
+.skeletonInfoLine {
+  height: 16px;
+  width: 50%;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  @include skeleton-animate;
+}

@@ -1,0 +1,26 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+    background-image: url(../../assets/images/count-down-banner.jpeg);
+    height: 409px;
+    width: calc(100% / 2);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.containerTimer {
+    @include flex_box_custom(center, center, 10px);
+}
+
+.title {
+    font-size: 28px;
+    color: $four_color;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.boxBtn { 
+    margin-top: 20px;
+    text-align: center;
+}

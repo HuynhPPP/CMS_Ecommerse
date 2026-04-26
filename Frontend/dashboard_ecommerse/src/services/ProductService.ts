@@ -32,6 +32,14 @@ const ProductService = {
       throw error;
     }
   },
+  deleteProduct: async (id: number) => {
+    try {
+      const res = await axiosInstance.delete(`/products/${id}`);
+      return res.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default ProductService;

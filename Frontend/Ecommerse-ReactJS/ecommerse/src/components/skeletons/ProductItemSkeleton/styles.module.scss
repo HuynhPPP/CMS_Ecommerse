@@ -1,0 +1,143 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+// --- 1. Animation Setup ---
+@mixin skeleton-animate {
+  background: #f0f0f0;
+  background: linear-gradient(90deg, #f0f0f0 0%, #e8e8e8 50%, #f0f0f0 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// --- 2. Shared Components (Dùng chung cho cả 2 view) ---
+.skeletonTitle {
+  height: 16px;
+  width: 80%;
+  margin: 6px 0;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+.skeletonPrice {
+  height: 14px;
+  width: 40%;
+  margin: 6px 0;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+.skeletonBrand {
+  height: 14px;
+  width: 50%;
+  margin: 6px 0;
+  border-radius: 4px;
+  @include skeleton-animate;
+}
+
+.skeletonButton {
+  width: 142px;
+  height: 36px;
+  border-radius: 4px;
+  margin: 10px 0;
+  @include skeleton-animate;
+}
+
+.skeletonSizeBox {
+  @include flex_box_custom(center, center, 10px);
+  margin-top: 10px;
+}
+
+.skeletonSize {
+  width: 30px;
+  height: 20px;
+  border-radius: 2px;
+  @include skeleton-animate;
+}
+
+// --- 3. Grid View (.productCard) ---
+.productCard {
+  width: 300px; // Cố định chiều rộng giống .boxImg thật
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  margin: 0 auto; // Căn giữa nếu cần
+
+  // Skeleton Image trong Grid View
+  .skeletonImage {
+    width: 100%;
+    // QUAN TRỌNG: Giữ tỉ lệ khung hình để không bị xẹp chiều cao
+    aspect-ratio: 3 / 4;
+    @include skeleton-animate;
+  }
+
+  // Nội dung Grid thường căn giữa
+  .skeletonContent {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; // Căn giữa tất cả items con
+
+    // Ghi đè margin của các thành phần con để căn giữa
+    .skeletonTitle,
+    .skeletonBrand,
+    .skeletonPrice,
+    .skeletonButton {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}
+
+// --- 4. List View (.containerItem) ---
+.containerItem {
+  @include flex_box_custom(flex-start, center, 10px);
+  margin-top: 10px;
+  width: 100%;
+  background: #fff;
+
+  // Skeleton Image trong List View (Ghi đè class skeletonImage)
+  .skeletonImage {
+    width: 430px; // Giống .largImg
+    height: 370px; // Chiều cao cố định cho list view
+    flex-shrink: 0; // Không bị co lại
+    border-radius: 4px;
+    @include skeleton-animate;
+  }
+
+  // Nội dung List View (Ghi đè class content)
+  .content {
+    flex: 1;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; // Căn trái
+
+    // Đảm bảo các phần tử con căn trái
+    .skeletonTitle,
+    .skeletonBrand,
+    .skeletonPrice {
+      margin-left: 0;
+    }
+
+    .skeletonButton {
+      margin-left: 0;
+      margin-top: 15px;
+    }
+  }
+}
+
+// Class tiện ích căn giữa (nếu logic JS thêm vào)
+.textCenter {
+  text-align: center;
+  align-items: center !important;
+}

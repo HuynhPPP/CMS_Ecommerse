@@ -1,0 +1,41 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.containerMethod {
+  padding: 25px;
+  position: relative;
+  border: 1px solid #e1e1e1;
+  margin-top: 45px;
+
+  .titleMethod {
+    position: absolute;
+    top: -8px;
+    transform: translateX(-50%);
+    left: 50%;
+    background-color: #fff;
+    padding: 0 5px;
+    text-transform: uppercase;
+    font-size: 14px;
+
+    span {
+      color: #2e7d32;
+    }
+  }
+
+  .boxImgMethods {
+    @include flex_box_custom(center, center, 13px);
+  }
+
+  .ImgpaymentMethods {
+    border: 1px solid #e1e1e1;
+    width: 50px;
+    height: 35px;
+  }
+}
+
+.textSecure {
+  text-align: center;
+  font-size: 14px;
+  color: $thr_color;
+  margin-top: 10px;
+}

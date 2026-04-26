@@ -13,9 +13,9 @@ import {
   Select,
   Space,
   Typography,
+  Upload,
 } from 'antd';
 import {
-  CopyOutlined,
   DeleteOutlined,
   MinusCircleOutlined,
   PlusOutlined,
@@ -26,6 +26,8 @@ import { ThemeContext } from '../../contexts/ThemeContext';
 import AppModal from '../../components/common/AppModal';
 import CategoryService from '../../services/CategoryService';
 import ProductService from '../../services/ProductService';
+import UploadImage from '../../components/common/UploadImage';
+import UploadService from '../../services/UploadService';
 
 type Props = {
   isOpen: boolean;
@@ -46,23 +48,55 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
 
   const handleOk = async () => {
     try {
+      setSubmitting(true);
       const values = await form.validateFields();
 
+      // --- LOGIC DELAYED UPLOAD ---
+      // Duyệt qua tất cả ảnh để tìm các file chưa upload
+      const updatedColors = await Promise.all(
+        (values.colors || []).map(async (color: any) => {
+          const updatedImages = await Promise.all(
+            (color.images || []).map(async (img: any) => {
+              // Nếu có file vật lý (chưa upload)
+              if (img.imageUrl?.file) {
+                const uploadRes = await UploadService.uploadSingle(img.imageUrl.file);
+                return {
+                  imageUrl: uploadRes.imageUrl,
+                  publicId: uploadRes.publicId,
+                };
+              }
+              // Nếu là ảnh cũ (đã có link hoặc object đã upload)
+              return {
+                imageUrl: img.imageUrl?.imageUrl || img.imageUrl,
+                publicId: img.imageUrl?.publicId || img.publicId,
+              };
+            })
+          );
+          return { ...color, images: updatedImages };
+        })
+      );
+
+      const finalValues = { ...values, colors: updatedColors };
+      // ----------------------------
+
       if (product) {
-        // Xử lý call API edit sản phẩm
-        await ProductService.updateProduct(product.id, values);
+        await ProductService.updateProduct(product.id, finalValues);
         message.success('Cập nhật sản phẩm thành công');
       } else {
-        // Xử lý call API create sản phẩm
-        await ProductService.createProduct(values);
+        await ProductService.createProduct(finalValues);
         message.success('Tạo sản phẩm thành công');
       }
 
       form.resetFields();
       onSuccess?.();
       onCancel();
-    } catch (error) {
-      message.error('Có lỗi xảy ra');
+    } catch (error: any) {
+      const errorMsg =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Có lỗi xảy ra';
+      message.error(errorMsg);
+      console.error('Full error:', error);
     } finally {
       setSubmitting(false);
     }
@@ -87,18 +121,44 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
   useEffect(() => {
     if (isOpen) {
       fetchCategories();
-      form.setFieldsValue({
-        colors: [
-          {
-            color: '',
-            colorCode: '#000',
-            images: [],
-            variants: [{ size: '', price: 0, stock: 0 }],
-          },
-        ],
-      });
+      if (product) {
+        // Chuẩn hóa dữ liệu ảnh từ API (string) sang Object cho Component Upload
+        const normalizedProduct = {
+          ...product,
+          colors: product.colors?.map((color) => ({
+            ...color,
+            images: color.images?.map((img) => ({
+              ...img,
+              imageUrl: {
+                imageUrl: img.imageUrl,
+                publicId: img.publicId,
+              },
+            })),
+          })),
+        };
+        form.setFieldsValue(normalizedProduct);
+      } else {
+        form.setFieldsValue({
+          name: '',
+          description: '',
+          categoryId: undefined,
+          colors: [
+            {
+              color: '',
+              colorCode: '#000',
+              images: [],
+              variants: [
+                { size: 'S', price: 0, stock: 0 },
+                { size: 'M', price: 0, stock: 0 },
+                { size: 'L', price: 0, stock: 0 },
+                { size: 'XL', price: 0, stock: 0 },
+              ],
+            },
+          ],
+        });
+      }
     }
-  }, [isOpen, product]);
+  }, [isOpen, product, form]);
 
   return (
     <>
@@ -282,15 +342,14 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
                                 style={{
                                   display: 'flex',
                                   flexWrap: 'wrap',
-                                  gap: 8,
+                                  gap: 16,
                                 }}
                               >
                                 {imageFields.map((imageField) => (
                                   <div
                                     key={imageField.key}
                                     style={{
-                                      display: 'flex',
-                                      width: '100%',
+                                      position: 'relative',
                                     }}
                                   >
                                     <Form.Item
@@ -299,50 +358,60 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
                                       rules={[
                                         {
                                           required: true,
-                                          message: 'Vui lòng nhập link ảnh',
+                                          message: 'Vui lòng upload ảnh',
                                         },
                                       ]}
-                                      style={{
-                                        marginBottom: 0,
-                                        flex: 1,
-                                      }}
+                                      style={{ marginBottom: 0 }}
                                     >
-                                      <Input
-                                        placeholder='Dán link ảnh vào đây...'
-                                        prefix={
-                                          <CopyOutlined
-                                            style={{
-                                              color: '#bfbfbf',
-                                            }}
-                                          />
-                                        }
-                                      />
+                                      <UploadImage />
                                     </Form.Item>
                                     <Button
-                                      type='text'
+                                      type='primary'
                                       danger
+                                      shape='circle'
+                                      size='small'
                                       icon={<MinusCircleOutlined />}
                                       onClick={() => {
                                         imageOptions.remove(imageField.name);
                                       }}
                                       style={{
-                                        marginLeft: 8,
+                                        position: 'absolute',
+                                        top: -8,
+                                        right: -8,
+                                        zIndex: 1,
                                       }}
                                     />
                                   </div>
                                 ))}
-                                <Button
-                                  type='dashed'
-                                  onClick={() => {
-                                    imageOptions.add({});
+                                <Upload
+                                  multiple
+                                  showUploadList={false}
+                                  beforeUpload={(file) => {
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => {
+                                      imageOptions.add({
+                                        imageUrl: {
+                                          imageUrl: e.target?.result as string,
+                                          file: file,
+                                        },
+                                      });
+                                    };
+                                    reader.readAsDataURL(file);
+                                    return false; // Chặn upload tự động
                                   }}
-                                  icon={<PlusOutlined />}
-                                  style={{
-                                    width: '100%',
-                                  }}
+                                  accept='image/*'
                                 >
-                                  Thêm ảnh
-                                </Button>
+                                  <Button
+                                    type='dashed'
+                                    icon={<PlusOutlined />}
+                                    style={{
+                                      width: 102,
+                                      height: 102,
+                                    }}
+                                  >
+                                    Thêm ảnh
+                                  </Button>
+                                </Upload>
                               </div>
                             )}
                           </Form.List>
@@ -366,9 +435,8 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
                           <div
                             style={{
                               background: isDark ? '#141414' : '#fff',
-                              border: `1px solid ${
-                                isDark ? '#303030' : '#f0f0f0'
-                              }`,
+                              border: `1px solid ${isDark ? '#303030' : '#f0f0f0'
+                                }`,
                               borderRadius: 8,
                               padding: 8,
                             }}
@@ -516,7 +584,17 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
                 <Button
                   type='primary'
                   onClick={() => {
-                    add();
+                    add({
+                      color: '',
+                      colorCode: '#000',
+                      images: [],
+                      variants: [
+                        { size: 'S', price: 0, stock: 0 },
+                        { size: 'M', price: 0, stock: 0 },
+                        { size: 'L', price: 0, stock: 0 },
+                        { size: 'XL', price: 0, stock: 0 },
+                      ],
+                    });
                   }}
                   icon={<PlusOutlined />}
                   size='large'

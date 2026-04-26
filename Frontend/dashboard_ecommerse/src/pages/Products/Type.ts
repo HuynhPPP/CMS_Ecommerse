@@ -2,15 +2,19 @@ export interface Variants {
   id?: number;
   size: string;
   price: number;
-  quantity: number;
+  stock: number;
 }
 
 export interface Colors {
-  colorName: string;
+  id?: number;
+  color: string;
   colorCode: string;
   images: {
+    id?: number;
     imageUrl: string;
+    publicId?: string; // Lưu ID để xóa trên Cloudinary
     order: number;
+    file?: File; // Trường tạm để lưu file chưa upload
   }[];
   variants: Variants[];
 }

@@ -1,6 +1,55 @@
 const prisma = require('../lib/prisma');
+const bcrypt = require('bcrypt');
 
 const UsersControllers = {
+  register: async (req, res) => {
+    try {
+      const { username, email, password } = req.body;
+
+      if (!username || !email || !password) {
+        return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin' });
+      }
+
+      // 1. Kiểm tra username hoặc email đã tồn tại chưa
+      const existingUser = await prisma.users.findFirst({
+        where: {
+          OR: [{ email }, { username }],
+          isDeleted: false,
+        },
+      });
+
+      if (existingUser) {
+        return res.status(400).json({
+          message: existingUser.email === email ? 'Email đã được sử dụng' : 'Tên đăng nhập đã tồn tại',
+        });
+      }
+
+      // 2. Mã hóa mật khẩu (độ khó 10)
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // 3. Tạo user mới
+      const user = await prisma.users.create({
+        data: {
+          username,
+          email,
+          password: hashedPassword,
+          role: 'USER', // Mặc định là khách hàng
+          isActive: true,
+        },
+      });
+
+      // 4. Trả về kết quả (loại bỏ mật khẩu)
+      const { password: _, ...userWithoutPassword } = user;
+      return res.status(201).json({
+        message: 'Đăng ký tài khoản thành công',
+        user: userWithoutPassword,
+      });
+    } catch (error) {
+      console.error('Register error:', error);
+      return res.status(500).json({ message: 'Lỗi hệ thống' });
+    }
+  },
+
   getUsers: async (req, res) => {
     try {
       let page = parseInt(req.query.page, 10) || 1;

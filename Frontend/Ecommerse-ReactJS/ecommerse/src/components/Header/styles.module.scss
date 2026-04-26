@@ -1,0 +1,206 @@
+@use '@styles/mixin.modules.scss' as *;
+@use '@styles/variable.module.scss' as *;
+
+.container {
+  @include flex_box_custom(center, center, 0px);
+  left: 0;
+  right: 0;
+}
+
+.topHeader {
+  position: absolute;
+  top: 0;
+}
+
+.fixedHeader {
+  position: fixed;
+  top: -83px;
+  background-color: #ffffffe6;
+  box-shadow: 2px 0px 12px 0px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
+  z-index: 999;
+  transform: translateY(83px);
+  transition: transform 0.5s ease;
+
+  @include mobile-only {
+    top: -60px;
+    transform: translateY(60px);
+  }
+}
+
+.containerHeader {
+  width: 1250px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 83px;
+  padding: 0 $mobile-padding-md;
+
+  @include mobile-only {
+    width: 100%;
+    height: 60px;
+    padding: 0 $mobile-padding-md;
+  }
+
+  @include tablet {
+    width: 100%;
+    max-width: $container-tablet;
+    padding: 0 $desktop-padding-sm;
+  }
+
+  @include desktop {
+    max-width: $container-desktop;
+  }
+
+  @include wide {
+    max-width: $container-wide;
+  }
+}
+
+.containerBoxIcon {
+  @include flex_box_custom(center, center, 10px);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  @include mobile-only {
+    gap: 6px;
+  }
+}
+
+.containerBox {
+  @include flex_box_custom(center, center, 20px);
+
+  @include mobile-only {
+    gap: 12px;
+  }
+
+  @include tablet-only {
+    gap: 16px;
+  }
+}
+
+.containerMenu {
+  @include flex_box_custom(center, center, 40px);
+
+  @include mobile-only {
+    gap: 16px;
+    font-size: 13px;
+  }
+
+  @include tablet-only {
+    gap: 24px;
+  }
+}
+
+.boxIcon {
+  @include radius_common(50%);
+  @include flex_box_custom(center, center, 0px);
+  background-color: $primary_color;
+  width: 26px;
+  height: 26px;
+  min-width: $touch-target-icon;
+  min-height: $touch-target-icon;
+
+  @include mobile-only {
+    width: 36px;
+    height: 36px;
+  }
+
+  svg,
+  img {
+    @include mobile-only {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.menu {
+  cursor: pointer;
+  padding-top: 9px;
+  font-size: 15px;
+  color: $primary_color;
+  position: relative;
+
+  @include mobile-only {
+    font-size: 13px;
+    padding-top: 6px;
+  }
+
+  @include tablet-only {
+    font-size: 14px;
+  }
+
+  .subMenu {
+    position: absolute;
+    background-color: #ffffff;
+    width: 100%;
+    padding: 10px;
+    top: 40px;
+
+    @include mobile-only {
+      top: 30px;
+      min-width: 120px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+    }
+  }
+}
+
+.menu::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 3px;
+  background-color: $primary_color;
+  margin-top: 6px;
+  transform-origin: right;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 300ms, opacity 500ms;
+
+  @include mobile-only {
+    height: 2px;
+    margin-top: 4px;
+  }
+}
+
+.menu:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+// On mobile, use tap instead of hover
+@include mobile-only {
+  .menu:active::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.boxCart {
+  position: relative;
+
+  .quantity {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: $primary_color;
+    color: #ffffff;
+    width: 15px;
+    height: 15px;
+    font-size: 10px;
+    @include radius_common(50%);
+    @include flex_box_custom(center, center, 0px);
+
+    @include mobile-only {
+      width: 18px;
+      height: 18px;
+      font-size: 11px;
+      top: -8px;
+      right: -8px;
+    }
+  }
+}

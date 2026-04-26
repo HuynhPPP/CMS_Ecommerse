@@ -66,10 +66,11 @@ model ProductColor {
 }
 
 model ProductColorImage {
-  id       Int    @id @default(autoincrement())
-  colorId  Int
-  imageUrl String
-  order    Int
+  id        Int          @id @default(autoincrement())
+  colorId   Int
+  imageUrl  String
+  publicId  String?
+  order     Int          @default(0)
 
   color ProductColor @relation(fields: [colorId], references: [id], onDelete: Cascade)
 }

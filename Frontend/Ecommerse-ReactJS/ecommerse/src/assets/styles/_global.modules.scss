@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+// ============================================
+// MOBILE-FIRST BASE STYLES
+// ============================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  // Enable smooth scrolling
+  scroll-behavior: smooth;
+
+  // Prevent font size adjustments on orientation change (iOS)
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  // Set base font size for rem calculations
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Roboto Mono', monospace;
+  margin: 0;
+  padding: 0;
+
+  // Prevent horizontal scroll on mobile
+  overflow-x: hidden;
+
+  // Optimize touch scrolling on iOS
+  -webkit-overflow-scrolling: touch;
+
+  // Improve text rendering
+  text-rendering: optimizeLegibility;
+
+  // Base line height for readability
+  line-height: 1.5;
+}
+
+// ============================================
+// TOUCH OPTIMIZATIONS
+// ============================================
+
+// Remove tap highlight on mobile
+a,
+button,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+// Improve button and link touch targets
+button,
+a {
+  touch-action: manipulation;
+}
+
+// Prevent text selection on UI elements
+button,
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+// ============================================
+// RESPONSIVE IMAGES
+// ============================================
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+// ============================================
+// FORM ELEMENTS MOBILE OPTIMIZATION
+// ============================================
+
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+
+// Prevent zoom on input focus (iOS)
+input[type='text'],
+input[type='email'],
+input[type='tel'],
+input[type='number'],
+input[type='search'],
+input[type='password'],
+textarea,
+select {
+  font-size: 16px; // Minimum 16px prevents zoom on iOS
+}
+
+// ============================================
+// ACCESSIBILITY
+// ============================================
+
+// Focus visible for keyboard navigation
+:focus-visible {
+  outline: 2px solid #333;
+  outline-offset: 2px;
+}
+
+// Remove default focus outline (will use :focus-visible instead)
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

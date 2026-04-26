@@ -121,6 +121,17 @@ const productsController = {
       const { id } = req.params;
       const { name, description, categoryId, colors } = req.body;
 
+      // --- PHẦN DEBUG UPDATE ---
+      // console.log('------------ DEBUG UPDATE PRODUCT DATA ------------');
+      // console.log('Product ID:', id);
+      // console.log('Data:', JSON.stringify(req.body, null, 2));
+
+      // const fs = require('fs');
+      // fs.writeFileSync('debug_update_product.json', JSON.stringify({ id, ...req.body }, null, 2));
+      // console.log('-> Dữ liệu update đã được ghi vào file: debug_update_product.json');
+      // console.log('---------------------------------------------------');
+      // -------------------------
+
       const product = await prisma.$transaction(async (tx) => {
         await tx.products.update({
           where: { id: parseInt(id, 10) },
@@ -137,7 +148,7 @@ const productsController = {
             include: {
               variants: {
                 include: {
-                  orderItem: true,
+                  orderItems: true,
                 },
               },
               images: true,
@@ -145,10 +156,9 @@ const productsController = {
           });
 
           const variantIdInOrder = new Set();
-
           existingColors.forEach((color) => {
             color.variants.forEach((variant) => {
-              if (variant.orderItem.length > 0) {
+              if (variant.orderItems && variant.orderItems.length > 0) {
                 variantIdInOrder.add(variant.id);
               }
             });
@@ -162,10 +172,9 @@ const productsController = {
           for (const incomingColor of colors) {
             const existingColor = existingColorsMap.get(incomingColor.color);
             if (existingColor) {
-              await tx.productColor.deleteMany({
-                where: {
-                  colorId: existingColor.id,
-                },
+              // Xóa ảnh cũ và tạo lại
+              await tx.productColorImage.deleteMany({
+                where: { colorId: existingColor.id },
               });
 
               if (incomingColor.images?.length) {
@@ -178,128 +187,99 @@ const productsController = {
                 });
               }
 
+              // Cập nhật mã màu
               await tx.productColor.update({
-                where: {
-                  id: existingColor.id,
-                },
-                data: {
-                  colorCode: incomingColor.colorCode || '#000000',
-                },
+                where: { id: existingColor.id },
+                data: { colorCode: incomingColor.colorCode || '#000000' },
               });
+
+              // Xử lý Variants của màu này
               const existingVariantMap = new Map();
-              existingColor.variants.forEach((variant) => {
-                existingVariantMap.set(variant.size, variant);
-              });
+              existingColor.variants.forEach((v) => existingVariantMap.set(v.size, v));
 
-              const incomingVariantSizes = new Set(
-                incomingColor.variants?.map((variant) => variant.size)
-              );
+              const incomingVariantSizes = new Set(incomingColor.variants?.map((v) => v.size));
 
-              for (const existingVariant of existingColor.variants) {
-                if (
-                  !incomingVariantSizes.has(existingVariant.size) &&
-                  !variantIdInOrder.has(existingVariant.id)
-                ) {
-                  await tx.productColorVariants.delete({
-                    where: {
-                      id: existingVariant.id,
-                    },
-                  });
+              // Xóa size không còn tồn tại
+              for (const exV of existingColor.variants) {
+                if (!incomingVariantSizes.has(exV.size) && !variantIdInOrder.has(exV.id)) {
+                  await tx.productColorVariants.delete({ where: { id: exV.id } });
                 }
               }
 
-              for (const incomingVariant of incomingColor.variants || []) {
-                const existingVariant = existingVariantMap.get(
-                  incomingVariant.size
-                );
-                if (existingVariant) {
+              // Cập nhật hoặc tạo mới size
+              for (const inV of incomingColor.variants || []) {
+                const exV = existingVariantMap.get(inV.size);
+                if (exV) {
                   await tx.productColorVariants.update({
-                    where: {
-                      id: existingVariant.id,
-                    },
+                    where: { id: exV.id },
                     data: {
-                      price: parseFloat(incomingVariant.price),
-                      stock: parseInt(incomingVariant.stock, 10),
+                      price: parseFloat(inV.price),
+                      stock: parseInt(inV.stock, 10),
                     },
                   });
                 } else {
                   await tx.productColorVariants.create({
                     data: {
                       colorId: existingColor.id,
-                      size: incomingVariant.size,
-                      price: parseFloat(incomingVariant.price),
-                      stock: parseInt(incomingVariant.stock, 10),
+                      size: inV.size,
+                      price: parseFloat(inV.price),
+                      stock: parseInt(inV.stock, 10),
                     },
                   });
                 }
-
-                existingColorsMap.delete(incomingColor.color);
               }
-
-              const colorBlockedByOrders = [];
-              const colorsToDelete = [];
-
-              for (const [colorName, existingColor] of existingColorsMap) {
-                const variantInOrders = existingColor.variants.filter(
-                  (variant) => variantIdInOrders.has(variant.id)
-                );
-                if (variantInOrders) {
-                  colorBlockedByOrders.push({
-                    color: colorName,
-                    variants: variantInOrders.map((variant) => variant.size),
-                  });
-                } else {
-                  colorsToDelete.push(existingColor);
-                }
-              }
-
-              if (colorBlockedByOrders.length > 0) {
-                throw new Error(
-                  'ORDERED_VARIANTS_EXIST:' +
-                    JSON.stringify(colorBlockedByOrders)
-                );
-              }
-
-              for (const color of colorsToDelete) {
-                await tx.productColorVariants.deleteMany({
-                  where: {
-                    colorId: color.id,
+              // Đánh dấu màu này đã được xử lý (để không bị xóa ở bước sau)
+              existingColorsMap.delete(incomingColor.color);
+            } else {
+              // Tạo màu sắc hoàn toàn mới
+              await tx.productColor.create({
+                data: {
+                  productId: parseInt(id, 10),
+                  color: incomingColor.color,
+                  colorCode: incomingColor.colorCode || '#000000',
+                  images: {
+                    create: incomingColor.images?.map((image, index) => ({
+                      imageUrl: image.imageUrl,
+                      order: index,
+                    })),
                   },
-                });
-                await tx.productColorImage.deleteMany({
-                  where: {
-                    colorId: color.id,
+                  variants: {
+                    create: incomingColor.variants?.map((variant) => ({
+                      size: variant.size,
+                      price: parseFloat(variant.price),
+                      stock: parseInt(variant.stock, 10),
+                    })),
                   },
-                });
-                await tx.productColor.delete({
-                  where: {
-                    id: color.id,
-                  },
-                });
-              }
+                },
+              });
             }
           }
-        } else {
-          await tx.productColor.create({
-            data: {
-              productId: parseInt(id, 10),
-              color: incomingColor.color,
-              colorCode: incomingColor.colorCode || '#000000',
-              images: {
-                create: incomingColor.images?.map((image, index) => ({
-                  imageUrl: image.imageUrl,
-                  order: index,
-                })),
-              },
-              variants: {
-                create: incomingColor.variants?.map((variant) => ({
-                  size: variant.size,
-                  price: parseFloat(variant.price),
-                  stock: parseInt(variant.stock, 10),
-                })),
-              },
-            },
-          });
+
+          // Xử lý xóa các màu sắc không còn trong danh sách gửi lên
+          const colorBlockedByOrders = [];
+          const colorsToDelete = [];
+
+          for (const [colorName, exColor] of existingColorsMap) {
+            const variantInOrders = exColor.variants.filter((v) => variantIdInOrder.has(v.id));
+            if (variantInOrders.length > 0) {
+              colorBlockedByOrders.push({
+                color: colorName,
+                variants: variantInOrders.map((v) => v.size),
+              });
+            } else {
+              colorsToDelete.push(exColor);
+            }
+          }
+
+          if (colorBlockedByOrders.length > 0) {
+            throw new Error('ORDERED_VARIANTS_EXIST:' + JSON.stringify(colorBlockedByOrders));
+          }
+
+          for (const color of colorsToDelete) {
+            await tx.productColorVariants.deleteMany({ where: { colorId: color.id } });
+            await tx.productColorImage.deleteMany({ where: { colorId: color.id } });
+            await tx.productColor.delete({ where: { id: color.id } });
+          }
         }
 
         return tx.products.findUnique({

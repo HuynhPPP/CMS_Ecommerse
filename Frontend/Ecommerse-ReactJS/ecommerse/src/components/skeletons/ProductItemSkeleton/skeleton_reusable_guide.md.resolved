@@ -1,0 +1,375 @@
+# Hướng Dẫn Sử Dụng Skeleton Loader Ở Nhiều Trang
+
+## ✅ Skeleton Loader Đã Sẵn Sàng Tái Sử Dụng!
+
+Component [ProductItemSkeleton](file:///d:/Work/Project_Web/E-commerse-reactjs/ecommerse/src/components/skeletons/ProductItemSkeleton/ProductItemSkeleton.jsx#5-63) giờ có thể được sử dụng ở bất kỳ đâu trong ứng dụng của bạn.
+
+---
+
+## 📸 Kết Quả Trên Homepage
+
+````carousel
+![Homepage với skeleton loaders](C:/Users/User Name/.gemini/antigravity/brain/8c26f7e1-a408-4f42-ac62-af182181edb1/homepage_skeleton_loading_1764920566114.png)
+
+<!-- slide -->
+
+![Homepage sau khi load xong](C:/Users/User Name/.gemini/antigravity/brain/8c26f7e1-a408-4f42-ac62-af182181edb1/homepage_products_loaded_1764920580980.png)
+
+<!-- slide -->
+
+![Video recording homepage](C:/Users/User Name/.gemini/antigravity/brain/8c26f7e1-a408-4f42-ac62-af182181edb1/homepage_skeleton_test_1764920553235.webp)
+````
+
+---
+
+## 🎯 Cách Tích Hợp Skeleton Vào Component Mới
+
+### **Bước 1: Import ProductItemSkeleton**
+
+```jsx
+import ProductItemSkeleton from '@components/skeletons/ProductItemSkeleton/ProductItemSkeleton';
+```
+
+### **Bước 2: Thêm Loading State**
+
+```jsx
+const [isLoading, setIsLoading] = useState(true);
+```
+
+### **Bước 3: Hiển Thị Skeleton Khi Loading**
+
+```jsx
+{isLoading ? (
+  // Skeleton loaders
+  <>
+    {Array.from({ length: 8 }).map((_, index) => (
+      <ProductItemSkeleton 
+        key={index} 
+        isShowGrid={true} 
+        isHomePage={true} 
+      />
+    ))}
+  </>
+) : (
+  // Actual products
+  data.map((item) => (
+    <ProductItem key={item._id} {...item} />
+  ))
+)}
+```
+
+---
+
+## 📋 Props của ProductItemSkeleton
+
+| Prop | Type | Default | Mô tả |
+|------|------|---------|-------|
+| `isShowGrid` | boolean | `true` | `true` = Grid view (300px), `false` = List view (430px) |
+| `isHomePage` | boolean | `true` | `true` = Không hiện size/button, `false` = Hiện đầy đủ |
+
+### **Khi Nào Dùng Props Gì?**
+
+#### **Homepage / Grid View**
+```jsx
+<ProductItemSkeleton 
+  isShowGrid={true} 
+  isHomePage={true} 
+/>
+```
+- Hiển thị: Image + Title + Price
+- Không có: Size buttons, Add to cart button, Brand
+
+#### **Shop Page / Grid View**
+```jsx
+<ProductItemSkeleton 
+  isShowGrid={true} 
+  isHomePage={false} 
+/>
+```
+- Hiển thị: Image + Title + Brand + Price + Button
+- Không có: Size buttons (chỉ có ở list view)
+
+#### **Shop Page / List View**
+```jsx
+<ProductItemSkeleton 
+  isShowGrid={false} 
+  isHomePage={false} 
+/>
+```
+- Hiển thị: Image + Size buttons + Title + Brand + Price + Button
+- Layout horizontal (430px image width)
+
+---
+
+## 💡 Ví Dụ Thực Tế
+
+### **1. HeadingListProduct Component**
+
+[HeadingListProduct.jsx](file:///d:/Work/Project_Web/E-commerse-reactjs/ecommerse/src/components/HeadingListProduct/HeadingListProduct.jsx)
+
+```jsx
+function HeadingListProduct({ data, isLoading = false }) {
+  return (
+    <MainLayout>
+      <div className={container}>
+        <CountDownBanner />
+        <div className={containerItem}>
+          {isLoading ? (
+            // 2 skeleton loaders
+            <>
+              <ProductItemSkeleton isShowGrid={true} isHomePage={true} />
+              <ProductItemSkeleton isShowGrid={true} isHomePage={true} />
+            </>
+          ) : (
+            // Actual products
+            data.map((item) => <ProductItem key={item._id} {...item} />)
+          )}
+        </div>
+      </div>
+    </MainLayout>
+  );
+}
+```
+
+**Đặc điểm:**
+- ✅ Hiển thị 2 skeleton (vì chỉ có 2 sản phẩm)
+- ✅ Grid view, homepage style
+- ✅ Đơn giản, gọn gàng
+
+---
+
+### **2. PopularProduct Component**
+
+[PopularProduct.jsx](file:///d:/Work/Project_Web/E-commerse-reactjs/ecommerse/src/components/PopularProduct/PopularProduct.jsx)
+
+```jsx
+function PopularProduct({ data, isLoading = false }) {
+  return (
+    <MainLayout>
+      <div className={container}>
+        {isLoading ? (
+          // 8 skeleton loaders
+          <>
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductItemSkeleton 
+                key={index} 
+                isShowGrid={true} 
+                isHomePage={true} 
+              />
+            ))}
+          </>
+        ) : (
+          // Actual products
+          data.map((item) => <ProductItem key={item._id} {...item} />)
+        )}
+      </div>
+    </MainLayout>
+  );
+}
+```
+
+**Đặc điểm:**
+- ✅ Hiển thị 8 skeleton (số lượng sản phẩm phổ biến)
+- ✅ Sử dụng `Array.from()` để tạo nhiều skeleton
+- ✅ Grid view, homepage style
+
+---
+
+### **3. ListProducts Component (Shop Page)**
+
+[ListProducts.jsx](file:///d:/Work/Project_Web/E-commerse-reactjs/ecommerse/src/pages/OurShop/components/ListProducts.jsx)
+
+```jsx
+function ListProducts() {
+  const { isShowGrid, isLoading, showId } = useContext(OurShopContext);
+  
+  const getSkeletonCount = () => {
+    if (showId === 'all') return 8;
+    return parseInt(showId) || 8;
+  };
+
+  return (
+    <div className={sectionListProduct}>
+      <MainLayout>
+        {isLoading ? (
+          <div className={isShowGrid ? containerProduct : ''}>
+            {Array.from({ length: getSkeletonCount() }).map((_, index) => (
+              <ProductItemSkeleton 
+                key={index} 
+                isShowGrid={isShowGrid}
+                isHomePage={false}
+              />
+            ))}
+          </div>
+        ) : (
+          // Actual products
+          <div className={isShowGrid ? containerProduct : ''}>
+            {products.map((item) => <ProductItem key={item._id} {...item} />)}
+          </div>
+        )}
+      </MainLayout>
+    </div>
+  );
+}
+```
+
+**Đặc điểm:**
+- ✅ Skeleton count động dựa trên `showId` (8, 12, hoặc all)
+- ✅ Hỗ trợ cả grid và list view (`isShowGrid`)
+- ✅ Shop page style (`isHomePage={false}`)
+- ✅ Hiển thị size buttons và add to cart button
+
+---
+
+### **4. HomePage Component**
+
+[HomePage.jsx](file:///d:/Work/Project_Web/E-commerse-reactjs/ecommerse/src/components/HomePage/HomePage.jsx)
+
+```jsx
+function HomePage() {
+  const [listProducts, setListProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const query = { sortType: 0, page: 1, limit: 10 };
+    setIsLoading(true);
+    getProducts(query)
+      .then((res) => {
+        setListProducts(res.contents);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to load products:', err);
+        setIsLoading(false);
+      });
+  }, []);
+
+  return (
+    <>
+      <MyHeader />
+      <Banner />
+      <Infor />
+      <AdvancelHeadling />
+      
+      <HeadingListProduct 
+        data={listProducts.slice(0, 2)} 
+        isLoading={isLoading}
+      />
+      
+      <PopularProduct 
+        data={listProducts.slice(2, listProducts.length)}
+        isLoading={isLoading}
+      />
+      
+      <SaleHomePage />
+      <MyFooter />
+    </>
+  );
+}
+```
+
+**Đặc điểm:**
+- ✅ Quản lý loading state tập trung
+- ✅ Truyền `isLoading` xuống các child components
+- ✅ Error handling với catch
+- ✅ Set loading về false trong cả then và catch
+
+---
+
+## 🔧 Best Practices
+
+### **1. Số Lượng Skeleton**
+- Hiển thị số lượng skeleton **gần bằng** số sản phẩm thực tế
+- Ví dụ: Nếu thường có 8 sản phẩm → hiển thị 8 skeleton
+
+### **2. Loading State Management**
+```jsx
+// ✅ GOOD: Set loading trong cả then và catch
+getProducts(query)
+  .then((res) => {
+    setData(res.contents);
+    setIsLoading(false);
+  })
+  .catch((err) => {
+    console.error(err);
+    setIsLoading(false); // Quan trọng!
+  });
+
+// ❌ BAD: Quên set loading trong catch
+getProducts(query)
+  .then((res) => {
+    setData(res.contents);
+    setIsLoading(false);
+  })
+  .catch((err) => {
+    console.error(err);
+    // Skeleton sẽ hiển thị mãi mãi!
+  });
+```
+
+### **3. Props Matching**
+Đảm bảo skeleton props khớp với ProductItem:
+```jsx
+// Nếu ProductItem có isHomePage={false}
+<ProductItemSkeleton isHomePage={false} />
+
+// Nếu ProductItem ở grid view
+<ProductItemSkeleton isShowGrid={true} />
+```
+
+### **4. Key Props**
+Luôn thêm `key` khi map skeleton:
+```jsx
+{Array.from({ length: 8 }).map((_, index) => (
+  <ProductItemSkeleton key={index} {...props} />
+))}
+```
+
+---
+
+## 📊 Tóm Tắt Các Trang Đã Tích Hợp
+
+| Trang/Component | Skeleton Count | isShowGrid | isHomePage | Ghi chú |
+|-----------------|----------------|------------|------------|---------|
+| HeadingListProduct | 2 | `true` | `true` | Homepage, 2 sản phẩm nổi bật |
+| PopularProduct | 8 | `true` | `true` | Homepage, sản phẩm phổ biến |
+| ListProducts (Shop) | Dynamic (8/12) | Dynamic | `false` | Shop page, hỗ trợ grid/list |
+
+---
+
+## 🎨 Tùy Chỉnh Skeleton
+
+Nếu cần tùy chỉnh skeleton cho component đặc biệt:
+
+### **Option 1: Tạo Wrapper Component**
+```jsx
+function MyCustomSkeleton() {
+  return (
+    <div className="my-custom-wrapper">
+      <ProductItemSkeleton isShowGrid={true} isHomePage={true} />
+    </div>
+  );
+}
+```
+
+### **Option 2: Tạo Skeleton Mới**
+Tham khảo cấu trúc của [ProductItemSkeleton](file:///d:/Work/Project_Web/E-commerse-reactjs/ecommerse/src/components/skeletons/ProductItemSkeleton/ProductItemSkeleton.jsx#5-63) và tạo skeleton mới trong `src/components/skeletons/`:
+```
+src/components/skeletons/
+├── ProductItemSkeleton/
+├── BlogItemSkeleton/      ← Mới
+└── CategorySkeleton/       ← Mới
+```
+
+---
+
+## ✨ Kết Luận
+
+Skeleton loader giờ đã:
+- ✅ **Reusable**: Dùng được ở nhiều trang
+- ✅ **Flexible**: Hỗ trợ grid/list, homepage/shop
+- ✅ **Easy to integrate**: Chỉ cần 3 bước đơn giản
+- ✅ **Consistent**: Giống hệt ProductItem thật
+- ✅ **Proven**: Đã test trên Homepage và Shop page
+
+**Bạn có thể tích hợp skeleton vào bất kỳ component nào chỉ trong vài phút!** 🚀

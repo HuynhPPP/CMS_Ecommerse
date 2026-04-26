@@ -1,0 +1,352 @@
+/* ============================================
+   CUSTOM SCROLLBAR STYLES FOR E-COMMERCE
+   ============================================ */
+
+/* ============================================
+   1. GLOBAL SCROLLBAR (Default for entire site)
+   ============================================ */
+
+/* For Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 12px; /* Width of vertical scrollbar */
+  height: 12px; /* Height of horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light gray background */
+  border-radius: 10px;
+  margin: 5px 0; /* Add margin to track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #888 0%, #666 100%); /* Gradient thumb */
+  border-radius: 10px;
+  border: 2px solid #f1f1f1; /* Border around thumb */
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #555 0%, #333 100%); /* Darker on hover */
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #222; /* Even darker when clicking */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin; /* "auto" or "thin" */
+  scrollbar-color: #888 #f1f1f1; /* thumb color, track color */
+}
+
+/* ============================================
+   2. PREMIUM SCROLLBAR (For main content areas)
+   ============================================ */
+
+.premium-scrollbar::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+.premium-scrollbar::-webkit-scrollbar-track {
+  background: linear-gradient(90deg, #f8f8f8 0%, #e8e8e8 100%);
+  border-radius: 12px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a90e2 0%, #357abd 100%);
+  border-radius: 12px;
+  border: 3px solid #f8f8f8;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.premium-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #357abd 0%, #2868a8 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.premium-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #4a90e2 #f8f8f8;
+}
+
+/* ============================================
+   3. MINIMAL SCROLLBAR (For sidebars, modals)
+   ============================================ */
+
+.minimal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.minimal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.minimal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.minimal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* ============================================
+   4. DARK MODE SCROLLBAR
+   ============================================ */
+
+.dark-scrollbar::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 10px;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #555 0%, #333 100%);
+  border-radius: 10px;
+  border: 2px solid #1a1a1a;
+}
+
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #666 0%, #444 100%);
+}
+
+.dark-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #555 #1a1a1a;
+}
+
+/* ============================================
+   5. PRODUCT LIST SCROLLBAR (Horizontal)
+   ============================================ */
+
+.product-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+
+.product-scroll::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 8px;
+  margin: 0 20px; /* Add margin on sides */
+}
+
+.product-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);
+  border-radius: 8px;
+  border: 2px solid #f5f5f5;
+}
+
+.product-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #ee5a6f 0%, #dd4a5f 100%);
+}
+
+.product-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #ff6b6b #f5f5f5;
+}
+
+/* ============================================
+   6. CART SIDEBAR SCROLLBAR
+   ============================================ */
+
+.cart-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.cart-scrollbar::-webkit-scrollbar-track {
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.cart-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  border-radius: 8px;
+  border: 2px solid #fafafa;
+}
+
+.cart-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669 0%, #047857 100%);
+}
+
+.cart-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 #fafafa;
+}
+
+/* ============================================
+   7. INVISIBLE SCROLLBAR (Auto-hide)
+   ============================================ */
+
+.invisible-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.invisible-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.invisible-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.invisible-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* ============================================
+   8. ANIMATED SCROLLBAR (With glow effect)
+   ============================================ */
+
+.animated-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.animated-scrollbar::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.animated-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;
+  box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  animation: scrollGlow 2s ease-in-out infinite;
+}
+
+@keyframes scrollGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
+  }
+}
+
+.animated-scrollbar::-webkit-scrollbar-thumb:hover {
+  animation: none;
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.8);
+}
+
+.animated-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #f0f0f0;
+}
+
+/* ============================================
+   9. BRAND COLOR SCROLLBAR (Customizable)
+   ============================================ */
+
+.brand-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.brand-scrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color, #f1f1f1);
+  border-radius: 10px;
+}
+
+.brand-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color, #888);
+  border-radius: 10px;
+  border: 2px solid var(--scrollbar-track-color, #f1f1f1);
+}
+
+.brand-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color, #555);
+}
+
+.brand-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color, #888)
+    var(--scrollbar-track-color, #f1f1f1);
+}
+
+/* ============================================
+   10. RESPONSIVE SCROLLBAR
+   ============================================ */
+
+/* Mobile devices - thinner scrollbar and touch optimization */
+@media (max-width: 768px) {
+  /* Optimize touch scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .premium-scrollbar::-webkit-scrollbar,
+  .dark-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Reduce animation effects on mobile for better performance */
+  .animated-scrollbar::-webkit-scrollbar-thumb {
+    animation: none;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+  }
+
+  /* Auto-hide scrollbar on mobile */
+  .auto-hide-mobile::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  .auto-hide-mobile::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  .auto-hide-mobile:hover::-webkit-scrollbar-thumb,
+  .auto-hide-mobile:active::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Tablet devices */
+@media (min-width: 769px) and (max-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+}

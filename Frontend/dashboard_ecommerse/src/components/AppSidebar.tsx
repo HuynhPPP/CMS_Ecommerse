@@ -34,6 +34,11 @@ const AppSidebar = () => {
       icon: <UserOutlined />,
       label: 'Users',
     },
+    {
+      key: 'orders',
+      icon: <ShoppingCartOutlined />,
+      label: 'Orders',
+    },
   ];
 
   const navigate = useNavigate();

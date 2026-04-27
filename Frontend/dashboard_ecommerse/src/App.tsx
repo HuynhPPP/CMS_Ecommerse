@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Products from './pages/Products/Products';
 import Categories from './pages/Categories/Categories';
 import Users from './pages/Users/Users';
+import Orders from './pages/Orders/Orders';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
             <Route path='products' element={<Products />} />
             <Route path='category' element={<Categories />} />
             <Route path='users' element={<Users />} />
+            <Route path='orders' element={<Orders />} />
           </Route>
         </Routes>
       </BrowserRouter>

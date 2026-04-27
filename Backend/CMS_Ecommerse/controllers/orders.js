@@ -185,6 +185,46 @@ const ordersController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+  // 5. Lấy tất cả đơn hàng (Dùng cho Admin)
+  getAllOrders: async (req, res) => {
+    try {
+      const orders = await prisma.order.findMany({
+        where: { isDeleted: false },
+        include: {
+          items: {
+            include: {
+              variant: {
+                include: {
+                  color: {
+                    include: {
+                      product: true,
+                      images: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          address: true,
+          user: {
+            select: {
+              username: true,
+              email: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      return res.status(200).json(orders);
+    } catch (error) {
+      console.error('Lỗi lấy danh sách tất cả đơn hàng:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
 };
 
 module.exports = ordersController;

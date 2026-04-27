@@ -1,8 +1,8 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-const provincesPath = path.join(__dirname, '../../../API/json/provinces.json');
-const treePath = path.join(__dirname, '../../../API/json/tree.json');
+const provincesPath = path.join(__dirname, '../../API/json/provinces.json');
+const treePath = path.join(__dirname, '../../API/json/tree.json');
 
 const getProvinces = async (req, res) => {
   try {

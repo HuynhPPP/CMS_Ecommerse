@@ -1,24 +1,21 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8386/api/orders';
+import axiosInstance from '../utils/axiosInstance';
 
 const OrderService = {
-  // Lấy danh sách tất cả đơn hàng (Cần API này ở backend)
+  // Lấy danh sách tất cả đơn hàng (Dùng cho Admin)
   getAllOrders: async () => {
-    // Lưu ý: Hiện tại backend chưa có getAllOrders, tôi sẽ cần bổ sung
-    const res = await axios.get(`${API_URL}`);
+    const res = await axiosInstance.get('/orders');
     return res.data;
   },
 
   // Lấy chi tiết đơn hàng
   getOrderById: async (id: number) => {
-    const res = await axios.get(`${API_URL}/${id}`);
+    const res = await axiosInstance.get(`/orders/${id}`);
     return res.data;
   },
 
   // Cập nhật trạng thái đơn hàng
   updateOrderStatus: async (id: number, status: string) => {
-    const res = await axios.patch(`${API_URL}/${id}`, { status });
+    const res = await axiosInstance.patch(`/orders/${id}`, { status });
     return res.data;
   },
 };

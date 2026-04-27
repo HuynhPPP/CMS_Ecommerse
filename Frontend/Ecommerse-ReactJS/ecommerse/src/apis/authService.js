@@ -1,13 +1,18 @@
 import axiosClient from './axiosClient';
 
-const register = async (body) => {
-  return await axiosClient.post('/register', body);
-};
-const signIn = async (body) => {
-  return await axiosClient.post('/login', body);
-};
-const getInfo = async (userId) => {
-  return await axiosClient.get(`/users/${userId}`);
+const login = async (data) => {
+  const res = await axiosClient.post('/users/login', data);
+  return res.data;
 };
 
-export { register, signIn, getInfo };
+const register = async (data) => {
+  const res = await axiosClient.post('/users/register', data);
+  return res.data;
+};
+
+const getInfo = async (id) => {
+  const res = await axiosClient.get(`/users/${id}`);
+  return res.data;
+};
+
+export { login, register, getInfo };

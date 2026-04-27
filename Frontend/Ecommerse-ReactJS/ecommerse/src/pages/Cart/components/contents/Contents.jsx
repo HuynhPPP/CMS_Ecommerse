@@ -6,9 +6,9 @@ import { IoTrashOutline } from 'react-icons/io5';
 import { useContext, useEffect } from 'react';
 import { SideBarContext } from '@/contexts/SideBarProvider';
 import {
-  addProductToCart,
-  removeProductFromCart,
-  deleteCart,
+  addToCart,
+  deleteCartItem,
+  clearCart,
 } from '@/apis/cartService';
 import { PiShoppingCartLight } from 'react-icons/pi';
 import { useNavigate } from 'react-router-dom';
@@ -39,7 +39,7 @@ function Contents() {
 
   const handleReplaceQuantity = (data) => {
     setIsLoadingProductCart(true);
-    addProductToCart(data)
+    addToCart(data)
       .then((res) => {
         console.log(res);
         handleGetListProductsCart(data.userId, 'cart');
@@ -55,10 +55,9 @@ function Contents() {
 
   const handleDeleteItemCart = (data) => {
     setIsLoadingProductCart(true);
-    removeProductFromCart(data)
+    deleteCartItem(data.cartItemId)
       .then((res) => {
-        console.log(res);
-        handleGetListProductsCart(data.userId, 'cart');
+        handleGetListProductsCart(userId, 'cart');
       })
       .catch((err) => {
         setIsLoadingProductCart(false);
@@ -71,9 +70,8 @@ function Contents() {
 
   const handleDeleteCart = () => {
     setIsLoadingProductCart(true);
-    deleteCart({ userId })
+    clearCart(userId)
       .then((res) => {
-        console.log(res);
         handleGetListProductsCart(userId, 'cart');
       })
       .catch((err) => {

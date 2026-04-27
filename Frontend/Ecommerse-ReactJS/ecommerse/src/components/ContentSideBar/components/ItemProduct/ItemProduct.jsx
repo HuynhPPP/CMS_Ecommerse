@@ -1,4 +1,4 @@
-import { removeProductFromCart } from '@/apis/cartService';
+import { deleteCartItem } from '@/apis/cartService';
 import styles from './styles.module.scss';
 import { IoCloseOutline } from 'react-icons/io5';
 import { useContext, useState } from 'react';
@@ -12,7 +12,7 @@ function ItemProduct({
   priceProduct,
   sku,
   quantity,
-  productId,
+  cartItemId,
   userId,
 }) {
   const {
@@ -30,7 +30,7 @@ function ItemProduct({
 
   const handleRemoveItem = () => {
     setIsRemoveItemCart(true);
-    removeProductFromCart({ userId, productId })
+    deleteCartItem(cartItemId)
       .then((res) => {
         setIsRemoveItemCart(false);
         handleGetListProductsCart(userId, 'cart');

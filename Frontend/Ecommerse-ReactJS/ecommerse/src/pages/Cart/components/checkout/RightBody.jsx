@@ -5,7 +5,7 @@ import Button from '@components/Button/Button';
 import PaymentMethod from '@components/PaymentMethod/PaymentMethod';
 import { handleTotalPrice } from '@/utils/helper';
 
-function RightBody({ handleExternalSubmit }) {
+function RightBody({ handleExternalSubmit, register, errors }) {
   const {
     rightBody,
     title,
@@ -52,14 +52,30 @@ function RightBody({ handleExternalSubmit }) {
         </div>
 
         <div className={payment}>
-          <input type='radio' id='qr' name='fav_language' value='qr' />
-          <label for='qr'>QR CODE</label>
+          <input 
+            type='radio' 
+            id='qr' 
+            value='QRCODE' 
+            {...register('paymentMethod', { required: true })} 
+          />
+          <label htmlFor='qr'>CHUYỂN KHOẢN / QR CODE</label>
         </div>
 
         <div>
-          <input type='radio' id='cod' name='fav_language' value='cod' /> {''}
-          <label for='cod'>Cash on delivery</label>
+          <input 
+            type='radio' 
+            id='cod' 
+            value='COD' 
+            {...register('paymentMethod', { required: true })} 
+          />
+          <label htmlFor='cod'> THANH TOÁN KHI NHẬN HÀNG (COD)</label>
         </div>
+
+        {errors.paymentMethod && (
+          <p style={{ color: 'red', fontSize: '12px', marginTop: '10px' }}>
+            * Vui lòng chọn phương thức thanh toán
+          </p>
+        )}
 
         <div className={btnPlaceOrder}>
           <Button content='PLACE ORDER' onClick={handleExternalSubmit} />

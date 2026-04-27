@@ -16,7 +16,7 @@ import { FaLinkedinIn } from 'react-icons/fa';
 import { FaWhatsapp } from 'react-icons/fa';
 import { FaSkype } from 'react-icons/fa';
 import cls from 'classnames';
-import { addProductToCart } from '@/apis/cartService';
+import { addToCart } from '@/apis/cartService';
 
 function DetailProduct() {
   const {

@@ -22,7 +22,7 @@ function Cart() {
     containerListItemCart,
   } = styles;
 
-  const { listProductCart, isLoadingProductCart, setIsOpen } =
+  const { listProductCart, isLoadingProductCart, setIsOpen, userId } =
     useContext(SideBarContext);
 
   const navigate = useNavigate();
@@ -34,6 +34,11 @@ function Cart() {
 
   const handleNavigateToCart = () => {
     navigate('/cart');
+    setIsOpen(false);
+  };
+
+  const handleNavigateToCheckout = () => {
+    navigate('/cart'); // Hiện tại page checkout nằm trong /cart stepper
     setIsOpen(false);
   };
 
@@ -61,15 +66,14 @@ function Cart() {
                 return (
                   <ItemProduct
                     key={index}
-                    item={item}
                     src={item.images[0]}
                     nameProduct={item.name}
                     sizeProduct={item.size}
                     priceProduct={item.price}
                     sku={item.sku}
                     quantity={item.quantity}
-                    productId={item.productId}
-                    userId={item.userId}
+                    cartItemId={item.cartItemId}
+                    userId={userId}
                   />
                 );
               })
@@ -84,7 +88,7 @@ function Cart() {
 
             <div className={boxBtn}>
               <Button content={'VIEW CART'} onClick={handleNavigateToCart} />
-              <Button content={'CHECKOUT'} isPrimary={false} />
+              <Button content={'CHECKOUT'} isPrimary={false} onClick={handleNavigateToCheckout} />
             </div>
           </div>
         </div>

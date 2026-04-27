@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getDetailOrder } from '@/apis/oderService';
+import { getOrderDetail } from '@/apis/oderService';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './styles.module.scss';
 import bidvBank from '@/assets/images/logo_bidv.png';
@@ -57,21 +57,20 @@ function QrPayment() {
   const qrCodeImage = `https://qr.sepay.vn/img?acc=96247BQDS3&bank=BIDV&amount=${amount}&des=${id}`;
 
   const handleGetDetailOrder = async () => {
-    if (!id) {
-      toast.error('Không tìm thấy thông tin đơn hàng!');
+    if (!id || id === 'null') {
+      toast.error('Không tìm thấy thông tin đơn hàng hợp lệ!');
       return;
     }
     try {
-      const res = await getDetailOrder(id);
-      if (res.data.data.status === 'success') {
+      const res = await getOrderDetail(id);
+      // Backend trả về status là 'PENDING', 'SUCCESS', 'CANCELLED', v.v.
+      if (res.status === 'SUCCESS' || res.status === 'success') {
         setIsSuccess(true);
       } else {
         setIsSuccess(false);
       }
 
-      console.log(res);
-
-      return res.data.data.status;
+      return res.status;
     } catch (error) {
       console.error(error);
       return null;

@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useContext, useEffect, useState } from 'react';
 import { ToastContext } from '@/contexts/ToastProvider';
-import { register, signIn, getInfo } from '@/apis/authService';
+import { register, login, getInfo } from '@/apis/authService';
 import Cookies from 'js-cookie';
 import { SideBarContext } from '@/contexts/SideBarProvider';
 import { StoreContext } from '@/contexts/StoreProvider';
@@ -42,28 +42,30 @@ function Login() {
         register(values)
           .then((res) => {
             setIsLoading(false);
-            toast.success(res.data.message || 'Registration successful!');
-            setIsRegister(false); // Chuyển sang màn đăng nhập
+            toast.success(res.message || 'Đăng ký thành công!');
+            setIsRegister(false);
           })
           .catch((err) => {
             setIsLoading(false);
-            toast.error(err.response?.data?.message || 'Registration failed');
+            toast.error(err.response?.data?.message || 'Đăng ký thất bại');
           });
       } else {
-        signIn(values)
+        login({ email: values.email, password: values.password })
           .then((res) => {
             setIsLoading(false);
-            const { token, user } = res.data;
-            Cookies.set('token', token);
+            const { user } = res;
+            
+            // Lưu thông tin vào Cookies và Store
             Cookies.set('userId', user.id);
             setUserId(user.id);
-            setIsOpen(false);
-            handleGetListProductsCart(user.id, 'cart');
-            toast.success('Sign in successfully!');
+            
+            toast.success('Đăng nhập thành công!');
+            setIsOpen(false); // Đóng sidebar
+            handleGetListProductsCart(user.id, 'cart'); // Cập nhật giỏ hàng
           })
           .catch((err) => {
             setIsLoading(false);
-            toast.error(err.response?.data?.message || 'Login failed');
+            toast.error(err.response?.data?.message || 'Đăng nhập thất bại');
           });
       }
     },

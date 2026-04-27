@@ -46,8 +46,8 @@ const UsersControllers = {
         token,
       });
     } catch (error) {
-      console.error('Login error:', error);
-      return res.status(500).json({ message: 'Lỗi hệ hệ thống' });
+      console.error('Login error detail:', error);
+      return res.status(500).json({ message: 'Lỗi hệ thống', error: error.message });
     }
   },
 
@@ -169,6 +169,11 @@ const UsersControllers = {
   getUserById: async (req, res) => {
     try {
       const { id } = req.params;
+      
+      if (!id || isNaN(Number(id))) {
+        return res.status(400).json({ message: 'User ID is required and must be a number' });
+      }
+
       const user = await prisma.user.findUnique({
         where: {
           id: Number(id),

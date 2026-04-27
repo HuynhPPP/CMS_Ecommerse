@@ -1,23 +1,27 @@
 import axiosClient from './axiosClient';
 
-const addProductToCart = async (data) => {
-  return await axiosClient.post('/cart', data);
-};
-
 const getCart = async (userId) => {
-  return await axiosClient.get(`/cart/${userId}`);
+  const res = await axiosClient.get(`/cart/${userId}`);
+  return res.data;
 };
 
-const removeProductFromCart = async (body) => {
-  return await axiosClient.delete(`/cart/deleteItem`, {
-    data: body,
+const addToCart = async (data) => {
+  const res = await axiosClient.post('/cart', data);
+  return res.data;
+};
+
+const deleteCartItem = async (cartItemId) => {
+  const res = await axiosClient.delete('/cart/deleteItem', {
+    data: { cartItemId }
   });
+  return res.data;
 };
 
-const deleteCart = async (body) => {
-  return await axiosClient.delete(`/cart/delete`, {
-    data: body,
+const clearCart = async (userId) => {
+  const res = await axiosClient.delete('/cart/delete', {
+    data: { userId }
   });
+  return res.data;
 };
 
-export { addProductToCart, getCart, removeProductFromCart, deleteCart };
+export { getCart, addToCart, deleteCartItem, clearCart };

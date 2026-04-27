@@ -13,15 +13,36 @@ export const SideBarProvider = ({ children }) => {
   const [productDetail, setProductDetail] = useState(null);
   const userId = Cookies.get('userId');
 
-  const handleGetListProductsCart = (userId, type) => {
-    if (userId && type === 'cart') {
+  const handleGetListProductsCart = (id, type) => {
+    if (id && type === 'cart') {
       setIsLoadingProductCart(true);
-      getCart(userId)
+      getCart(id)
         .then((res) => {
-          setListProductCart(res.data.data);
+          // res chính là đối tượng cart từ Backend { items: [...] }
+          const items = res.items || [];
+          const formattedItems = items.map((item) => {
+            const product = item.variant.color.product;
+            const color = item.variant.color;
+            return {
+              cartItemId: item.id,
+              productVariantId: item.variant.id, // Bổ sung ID biến thể
+              id: item.variant.id, // Alias để Checkout.jsx dễ lấy
+              productId: product.id,
+              name: product.name,
+              price: item.variant.price,
+              quantity: item.quantity,
+              size: item.variant.size,
+              color: color.color,
+              images: color.images.map(img => img.imageUrl),
+              sku: `SKU-${product.id}-${item.variant.id}`,
+              total: item.variant.price * item.quantity
+            };
+          });
+          setListProductCart(formattedItems);
           setIsLoadingProductCart(false);
         })
         .catch((err) => {
+          console.error('Fetch cart error:', err);
           setListProductCart([]);
           setIsLoadingProductCart(false);
         });

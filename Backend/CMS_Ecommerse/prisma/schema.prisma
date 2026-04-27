@@ -24,6 +24,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   order Order[]
+  cart  Cart?
 }
 
 model Category {
@@ -84,6 +85,7 @@ model ProductColorVariants {
 
   color      ProductColor @relation(fields: [colorId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
+  cartItems  CartItem[]
 }
 
 model Order {
@@ -93,7 +95,8 @@ model Order {
   totalAmount Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  isActive    Boolean  @default(true)
+  paymentMethod String   @default("COD") // COD, QRCODE
+  isActive      Boolean  @default(true)
   isDeleted   Boolean  @default(false)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -118,13 +121,46 @@ model OrderItem {
 }
 
 model Address {
-  id        Int      @id @default(autoincrement())
-  orderId   Int      @unique
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true)
-  isDeleted Boolean  @default(false)
+  id          Int      @id @default(autoincrement())
+  orderId     Int      @unique
+  userId      Int
+  firstName   String
+  lastName    String
+  companyName String?
+  country     String
+  street      String
+  apartment   String?
+  city        String
+  state       String
+  phone       String
+  zipCode     String
+  email       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
+  isDeleted   Boolean  @default(false)
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id               Int      @id @default(autoincrement())
+  cartId           Int
+  productVariantId Int
+  quantity         Int      @default(1)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  cart    Cart                 @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductColorVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 }

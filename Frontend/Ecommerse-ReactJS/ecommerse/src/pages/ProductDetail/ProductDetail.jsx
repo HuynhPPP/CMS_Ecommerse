@@ -21,7 +21,7 @@ import { handleAddProductToCartCommon } from '@/utils/helper';
 import { SideBarContext } from '@/contexts/SideBarProvider';
 import { ToastContext } from '@/contexts/ToastProvider';
 import Cookies from 'js-cookie';
-import { addProductToCart } from '@/apis/cartService';
+import { addToCart } from '@/apis/cartService';
 import LoadingTextCommon from '@components/LoadingTextCommon/LoadingTextCommon';
 
 function ProductDetail() {

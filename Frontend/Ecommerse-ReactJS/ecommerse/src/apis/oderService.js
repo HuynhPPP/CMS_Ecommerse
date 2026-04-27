@@ -1,11 +1,18 @@
 import axiosClient from './axiosClient';
 
-const creatOrder = async (data) => {
-    return await axiosClient.post(`/orders`, data);
+const createOrder = async (orderData) => {
+  const res = await axiosClient.post('/orders', orderData);
+  return res.data;
 };
 
-const getDetailOrder = async (id) => {
-    return await axiosClient.get(`/orders/${id}`);
+const getOrdersByUser = async (userId) => {
+  const res = await axiosClient.get(`/orders/user/${userId}`);
+  return res.data;
 };
 
-export { creatOrder, getDetailOrder };
+const getOrderDetail = async (orderId) => {
+  const res = await axiosClient.get(`/orders/${orderId}`);
+  return res.data;
+};
+
+export { createOrder, getOrdersByUser, getOrderDetail, getOrderDetail as getDetailOrder };

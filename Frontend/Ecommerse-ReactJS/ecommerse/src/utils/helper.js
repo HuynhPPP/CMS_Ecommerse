@@ -1,4 +1,4 @@
-import { addProductToCart } from '@/apis/cartService';
+import { addToCart } from '@/apis/cartService';
 
 export const handleAddProductToCartCommon = (
   userId,
@@ -14,12 +14,12 @@ export const handleAddProductToCartCommon = (
   if (!userId) {
     setIsOpen(true);
     setType('login');
-    toast.warning('Please login to add to cart');
+    toast.warning('Vui lòng đăng nhập để thêm vào giỏ hàng');
     return;
   }
 
   if (!sizeChoose) {
-    toast.warning('Please choose size');
+    toast.warning('Vui lòng chọn kích thước (size)');
     return;
   }
 
@@ -30,17 +30,17 @@ export const handleAddProductToCartCommon = (
     quantity,
   };
   setIsLoading(true);
-  addProductToCart(data)
+  addToCart(data)
     .then((res) => {
       setIsOpen(true);
       setType('cart');
-      toast.success('Add Product to cart successfully');
+      toast.success('Đã thêm sản phẩm vào giỏ hàng');
       setIsLoading(false);
       handleGetListProductsCart(userId, 'cart');
     })
     .catch((err) => {
       console.log(err);
-      toast.error('Add Product to cart failed');
+      toast.error('Thêm vào giỏ hàng thất bại!');
       setIsLoading(false);
     });
 };

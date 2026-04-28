@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:8386/api', // Kết nối với Backend local của bạn
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8386/api',
   timeout: 100000,
   headers: {
     'Content-Type': 'application/json',

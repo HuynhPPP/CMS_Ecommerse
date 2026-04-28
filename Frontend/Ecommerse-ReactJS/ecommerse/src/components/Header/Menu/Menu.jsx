@@ -53,12 +53,27 @@ function Menu({ content, href }) {
         <div
           onMouseLeave={() => setIsShowSubMenu(false)}
           className={subMenu}
-          onClick={(e) => {
-            e.stopPropagation(); // Chặn sự kiện click nhảy vào thẻ cha
-            handleLogOut();
-          }}
         >
-          LOG OUT
+          {userInfo?.role === 'ADMIN' && (
+            <div
+              className={styles.subMenuItem}
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open('https://cms-ecommerse.vercel.app/', '_blank');
+              }}
+            >
+              🛠 Admin Dashboard
+            </div>
+          )}
+          <div
+            className={styles.subMenuItem}
+            onClick={(e) => {
+              e.stopPropagation(); // Chặn sự kiện click nhảy vào thẻ cha
+              handleLogOut();
+            }}
+          >
+            LOG OUT
+          </div>
         </div>
       )}
     </div>

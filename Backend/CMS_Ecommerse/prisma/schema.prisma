@@ -67,11 +67,11 @@ model ProductColor {
 }
 
 model ProductColorImage {
-  id        Int          @id @default(autoincrement())
-  colorId   Int
-  imageUrl  String
-  publicId  String?
-  order     Int          @default(0)
+  id       Int     @id @default(autoincrement())
+  colorId  Int
+  imageUrl String
+  publicId String?
+  order    Int     @default(0)
 
   color ProductColor @relation(fields: [colorId], references: [id], onDelete: Cascade)
 }
@@ -89,15 +89,15 @@ model ProductColorVariants {
 }
 
 model Order {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  status      String   @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
-  totalAmount Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  status        String   @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  totalAmount   Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   paymentMethod String   @default("COD") // COD, QRCODE
   isActive      Boolean  @default(true)
-  isDeleted   Boolean  @default(false)
+  isDeleted     Boolean  @default(false)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -148,7 +148,7 @@ model Cart {
   userId    Int      @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items CartItem[]
 }

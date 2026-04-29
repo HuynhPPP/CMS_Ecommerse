@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Table, Tag, Space, Button, message, Modal, Select, Descriptions, Typography, Divider, Input, Row, Col, Card, Statistic, Timeline } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { 
-  SearchOutlined, 
-  ShoppingCartOutlined, 
+import {
+  SearchOutlined,
 } from '@ant-design/icons';
 import OrderService from '../../services/OrderService';
 import dayjs from 'dayjs';
@@ -183,11 +182,24 @@ const Orders: React.FC = () => {
       ),
     },
   ];
+  const [loadingTip, setLoadingTip] = useState<string>('');
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timer = setTimeout(() => {
+        setLoadingTip('Server đang khởi động, vui lòng chờ trong giây lát...');
+      }, 5000);
+    } else {
+      setLoadingTip('');
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   return (
-    <div style={{ 
-      padding: '24px', 
-      background: isDark ? '#141414' : '#fff', 
+    <div style={{
+      padding: '24px',
+      background: isDark ? '#141414' : '#fff',
       borderRadius: '12px',
       boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
       minHeight: '100%'
@@ -196,13 +208,13 @@ const Orders: React.FC = () => {
         <Title level={3} style={{ margin: 0, color: isDark ? '#fff' : undefined }}>Quản Lý Đơn Hàng</Title>
         <Button type="primary" onClick={fetchOrders}>Làm mới</Button>
       </div>
-      
-      <Table 
-        columns={columns} 
-        dataSource={orders} 
-        loading={loading} 
-        rowKey="id" 
-        pagination={{ 
+
+      <Table
+        columns={columns}
+        dataSource={orders}
+        loading={{ spinning: !!loading, tip: loadingTip }}
+        rowKey="id"
+        pagination={{
           pageSize: 10,
           showSizeChanger: true,
           pageSizeOptions: ['10', '20', '50'],
@@ -211,11 +223,11 @@ const Orders: React.FC = () => {
         style={{ background: 'transparent' }}
       />
 
-      <DetailOrder 
-        order={selectedOrder} 
-        visible={isModalVisible} 
-        onCancel={() => setIsModalVisible(false)} 
-        isDark={isDark} 
+      <DetailOrder
+        order={selectedOrder}
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        isDark={isDark}
       />
     </div>
   );

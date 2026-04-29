@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8386/api',
-  timeout: 100000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,7 +1,7 @@
 import { Image, Table, Tag, Typography, Tooltip, Space } from 'antd';
 import type { ProductType } from './Type';
 import TableAction from '../../components/common/TableAction';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type Props = {
   products: ProductType[];
@@ -22,6 +22,19 @@ const ProducsTable = ({
 }: Props) => {
   // State lưu trữ index của màu đang chọn cho mỗi sản phẩm: { [productId]: colorIndex }
   const [selectedColorMap, setSelectedColorMap] = useState<Record<number, number>>({});
+  const [loadingTip, setLoadingTip] = useState<string>('');
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timer = setTimeout(() => {
+        setLoadingTip('Server đang khởi động, vui lòng chờ trong giây lát...');
+      }, 5000);
+    } else {
+      setLoadingTip('');
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const columns = [
     {
@@ -157,7 +170,7 @@ const ProducsTable = ({
       columns={columns}
       dataSource={products}
       rowKey='id'
-      loading={loading}
+      loading={{ spinning: !!loading, tip: loadingTip }}
       pagination={pagination}
       onChange={onChange}
     />

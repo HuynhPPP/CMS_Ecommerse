@@ -1,4 +1,5 @@
 import { Table, Tag } from 'antd';
+import { useState, useEffect } from 'react';
 import type { CategoryType } from './Type';
 import TableAction from '../../components/common/TableAction';
 
@@ -23,6 +24,20 @@ const TableCategories = ({
   onDelete,
   onEdit,
 }: Props) => {
+  const [loadingTip, setLoadingTip] = useState<string>('');
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    if (loading) {
+      timer = setTimeout(() => {
+        setLoadingTip('Server đang khởi động, vui lòng chờ trong giây lát...');
+      }, 5000);
+    } else {
+      setLoadingTip('');
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
+
   const columns = [
     {
       title: 'Tên danh mục',
@@ -64,7 +79,7 @@ const TableCategories = ({
     <Table
       columns={columns}
       dataSource={categories}
-      loading={loading}
+      loading={{ spinning: !!loading, tip: loadingTip }}
       rowKey='id'
       pagination={{
         current: page,

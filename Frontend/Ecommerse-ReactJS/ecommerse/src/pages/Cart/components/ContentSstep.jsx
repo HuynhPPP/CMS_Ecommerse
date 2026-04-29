@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { StepperContext } from '@/contexts/StepperProvider';
 import Contents from '@/pages/Cart/components/contents/Contents';
 import Checkout from '@/pages/Cart/components/checkout/Checkout';
-import QrPayment from '@/pages/Cart/components/QrPayment/QrPayment';
+import OrderStatus from '@/pages/Cart/components/OrderStatus/OrderStatus';
 
 function ContentStep() {
   const { currentStep } = useContext(StepperContext);
@@ -15,7 +15,7 @@ function ContentStep() {
       case 2:
         return <Checkout />;
       case 3:
-        return <QrPayment />;
+        return <OrderStatus />;
       default:
         return <Contents />;
     }

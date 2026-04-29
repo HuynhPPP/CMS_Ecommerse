@@ -1,4 +1,4 @@
-import { Table, Tag } from 'antd';
+import { Empty, Table, Tag } from 'antd';
 import { useState, useEffect } from 'react';
 import type { CategoryType } from './Type';
 import TableAction from '../../components/common/TableAction';
@@ -77,8 +77,10 @@ const TableCategories = ({
 
   return (
     <Table
+      bordered
       columns={columns}
       dataSource={categories}
+      locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
       loading={{ spinning: !!loading, tip: loadingTip }}
       rowKey='id'
       pagination={{

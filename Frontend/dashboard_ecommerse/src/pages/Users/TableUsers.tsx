@@ -1,4 +1,4 @@
-import { Table, Tag } from 'antd';
+import { Table, Tag, Empty } from 'antd';
 import { useState, useEffect } from 'react';
 import type { UserType } from './Type';
 import TableAction from '../../components/common/TableAction';
@@ -47,7 +47,7 @@ const TableUsers = ({
       width: 80,
     },
     {
-      title: 'Username',
+      title: 'Tên người dùng',
       dataIndex: 'username',
       key: 'username',
     },
@@ -57,7 +57,7 @@ const TableUsers = ({
       key: 'email',
     },
     {
-      title: 'Role',
+      title: 'Vai trò',
       dataIndex: 'role',
       key: 'role',
       render: (role: string) => (
@@ -65,7 +65,7 @@ const TableUsers = ({
       ),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'isActive',
       key: 'isActive',
       render: (isActive: boolean) => (
@@ -75,13 +75,13 @@ const TableUsers = ({
       ),
     },
     {
-      title: 'Created At',
+      title: 'Ngày tạo',
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
-      title: 'Action',
+      title: 'Thao tác',
       key: 'action',
       width: 150,
       render: (_, record) => (
@@ -97,10 +97,14 @@ const TableUsers = ({
 
   return (
     <Table
+      bordered
       columns={columns}
       dataSource={users}
       rowKey="id"
-      loading={{ spinning: !!loading, tip: loadingTip }}
+      locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+      loading={
+        { spinning: !!loading, tip: loadingTip }
+      }
       pagination={{
         total,
         current: page,

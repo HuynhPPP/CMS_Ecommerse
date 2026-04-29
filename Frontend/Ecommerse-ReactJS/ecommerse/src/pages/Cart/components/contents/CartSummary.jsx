@@ -31,26 +31,26 @@ function CartSummary() {
     <>
       <div className={containerRight}>
         <div className={containerSummary}>
-          <div className={title}>CART TOTALS</div>
+          <div className={title}>TỔNG ĐƠN HÀNG</div>
 
           <div className={cls(boxTotal, subTotal)}>
-            <div>SUBTOTAL</div>
+            <div>TẠM TÍNH</div>
             <div className={price}>
-              ${handleTotalPrice(listProductCart).toFixed(2)}
+              {new Intl.NumberFormat('vi-VN').format(handleTotalPrice(listProductCart))} VNĐ
             </div>
           </div>
 
           <div className={cls(boxTotal, totals)}>
-            <div>TOTAL</div>
-            <div>${handleTotalPrice(listProductCart).toFixed(2)}</div>
+            <div>TỔNG TIỀN</div>
+            <div>{new Intl.NumberFormat('vi-VN').format(handleTotalPrice(listProductCart))} VNĐ</div>
           </div>
 
           <Button
-            content={'PROCEED TO CHECKOUT'}
+            content={'THANH TOÁN'}
             onClick={handleProceedToCheckout}
           />
           <div className={space}></div>
-          <Button content={'CONTINUE SHOPPING'} isPrimary={false} />
+          <Button content={'TIẾP TỤC MUA SẮM'} isPrimary={false} />
           {isLoadingProductCart && <LoadingCart />}
         </div>
 

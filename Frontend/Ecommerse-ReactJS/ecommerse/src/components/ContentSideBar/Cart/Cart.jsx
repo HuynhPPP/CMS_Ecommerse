@@ -54,7 +54,7 @@ function Cart() {
     >
       <HeaderSideBar
         icon={<PiShoppingCart style={{ fontSize: '30px' }} />}
-        title='CART'
+        title='GIỎ HÀNG'
       />
       {listProductCart.length ? (
         <div className={containerListItemCart}>
@@ -70,10 +70,11 @@ function Cart() {
                     nameProduct={item.name}
                     sizeProduct={item.size}
                     priceProduct={item.price}
-                    sku={item.sku}
                     quantity={item.quantity}
                     cartItemId={item.cartItemId}
                     userId={userId}
+                    colorProduct={item.color}
+                    productId={item.productId}
                   />
                 );
               })
@@ -82,22 +83,22 @@ function Cart() {
 
           <div>
             <div className={total}>
-              <p>SUBTOTAL:</p>
-              <p>${subTotal.toFixed(2)}</p>
+              <p>TỔNG TIỀN:</p>
+              <p>{new Intl.NumberFormat('vi-VN').format(subTotal)} VNĐ</p>
             </div>
 
             <div className={boxBtn}>
-              <Button content={'VIEW CART'} onClick={handleNavigateToCart} />
-              <Button content={'CHECKOUT'} isPrimary={false} onClick={handleNavigateToCheckout} />
+              <Button content={'XEM GIỎ HÀNG'} onClick={handleNavigateToCart} />
+              <Button content={'THANH TOÁN'} isPrimary={false} onClick={handleNavigateToCheckout} />
             </div>
           </div>
         </div>
       ) : (
         <div className={boxEmptyCart}>
-          <div>No products in the cart</div>
+          <div>Giỏ hàng trống</div>
           <div className={boxBtnEmptyCart}>
             <Button
-              content={'RETURN TO SHOP'}
+              content={'QUAY LẠI CỬA HÀNG'}
               isPrimary={false}
               onClick={handleNavigateToShop}
             />

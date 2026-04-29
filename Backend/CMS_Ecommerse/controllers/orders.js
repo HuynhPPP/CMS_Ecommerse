@@ -4,7 +4,12 @@ const ordersController = {
   // 1. Tạo đơn hàng mới
   createOrder: async (req, res) => {
     const { userId, items, totalAmount, addressData, paymentMethod } = req.body;
-    
+
+    console.log("==========================================");
+    console.log(req.body);
+    console.log("==========================================");
+    console.log(addressData);
+
     // Hỗ trợ cả dữ liệu đóng gói trong addressData (Postman) hoặc dữ liệu phẳng (Frontend form)
     const finalAddress = addressData || req.body;
 

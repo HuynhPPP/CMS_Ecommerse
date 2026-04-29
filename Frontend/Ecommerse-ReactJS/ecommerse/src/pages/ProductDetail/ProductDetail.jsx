@@ -150,7 +150,7 @@ function ProductDetail() {
       quantity,
       setIsLoadingBtn,
       handleGetListProductsCart,
-      colorSelected.color // Truyền thêm màu nếu helper hỗ trợ
+      colorSelected?.id
     );
   };
 
@@ -161,7 +161,7 @@ function ProductDetail() {
       userId,
       productId: param.id,
       size: sizeSelected,
-      color: colorSelected.color,
+      colorId: colorSelected?.id,
       quantity,
     };
 

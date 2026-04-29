@@ -38,12 +38,30 @@ function Checkout() {
   const navigate = useNavigate();
   const { setCurrentStep } = useContext(StepperContext);
 
+  const getSavedData = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem('checkoutFormData')) || {};
+    } catch {
+      return {};
+    }
+  };
+
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: getSavedData()
+  });
+
+  useEffect(() => {
+    const subscription = watch((value) => {
+      sessionStorage.setItem('checkoutFormData', JSON.stringify(value));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   const formRef = useRef();
 
@@ -78,6 +96,7 @@ function Checkout() {
         price: item.price,
       })),
       ...formData,
+      street: `${formData.specificAddress}, ${formData.street}`, // Nối địa chỉ cụ thể vào street
       country: 'Việt Nam', // Mặc định quốc gia là Việt Nam
       city: selectedCity || formData.city, // Lưu tên tỉnh thành thay vì mã code
       state: selectedWard || formData.state, // Lưu tên phường xã thay vì mã code
@@ -86,19 +105,22 @@ function Checkout() {
 
     try {
       const res = await createOrder(orderPayload);
-      
+
       if (!res.order?.id) {
         throw new Error('Không nhận được mã đơn hàng từ hệ thống!');
       }
 
       if (formData.paymentMethod === 'QRCODE') {
+        sessionStorage.removeItem('checkoutFormData');
         setCurrentStep(3);
         navigate(`/cart?id=${res.order.id}&totalAmount=${res.order.totalAmount}`);
       } else {
         // Trường hợp COD
         toast.success('Đặt hàng thành công! Chúng tôi sẽ liên hệ xác nhận đơn hàng của bạn sớm nhất.');
         handleGetListProductsCart(userId, 'cart'); // Làm mới giỏ hàng
-        navigate('/order'); // Chuyển về trang danh sách đơn hàng
+        sessionStorage.removeItem('checkoutFormData');
+        setCurrentStep(3);
+        navigate(`/cart?id=${res.order.id}`); // Điều hướng đến bước 3
       }
     } catch (error) {
       console.log(error);
@@ -114,6 +136,10 @@ function Checkout() {
           value: p.code,
         }))
       );
+      const saved = getSavedData();
+      if (saved.city) {
+        setValue('city', saved.city);
+      }
     });
   }, []);
 
@@ -131,6 +157,10 @@ function Checkout() {
           value: w.code,
         }))
       );
+      const saved = getSavedData();
+      if (saved.state && saved.city === cityValue) {
+        setValue('state', saved.state);
+      }
     });
   }, [cityValue]);
 
@@ -169,21 +199,6 @@ function Checkout() {
             />
           </div>
 
-
-          <div className={row}>
-            <InputCustom
-              label={'Địa chỉ nhà'}
-              type={'text'}
-              isRequired={true}
-              placeholder={'Số nhà, tên đường...'}
-              register={register('street', {
-                required: true,
-              })}
-              isError={errors.street}
-            />
-          </div>
-
-
           <div className={row}>
             <InputCustom
               label={'Tỉnh / Thành phố'}
@@ -213,6 +228,32 @@ function Checkout() {
 
           <div className={row}>
             <InputCustom
+              label={'Đường / Thôn / Xóm'}
+              type={'text'}
+              isRequired={true}
+              placeholder={'Tên đường, thôn, xóm...'}
+              register={register('street', {
+                required: true,
+              })}
+              isError={errors.street}
+            />
+          </div>
+
+          <div className={row}>
+            <InputCustom
+              label={'Địa chỉ cụ thể'}
+              type={'text'}
+              isRequired={true}
+              placeholder={'Số nhà, ngõ, ngách, căn hộ...'}
+              register={register('specificAddress', {
+                required: true,
+              })}
+              isError={errors.specificAddress}
+            />
+          </div>
+
+          <div className={row}>
+            <InputCustom
               label={'Số điện thoại'}
               type={'text'}
               isRequired={true}
@@ -224,7 +265,7 @@ function Checkout() {
             />
           </div>
 
-
+          {/* Địa chỉ Email */}
           <div className={row}>
             <InputCustom
               label={'Địa chỉ Email'}
@@ -241,8 +282,8 @@ function Checkout() {
         </form>
       </div>
 
-      <RightBody 
-        handleExternalSubmit={handleExternalSubmit} 
+      <RightBody
+        handleExternalSubmit={handleExternalSubmit}
         register={register}
         errors={errors}
       />

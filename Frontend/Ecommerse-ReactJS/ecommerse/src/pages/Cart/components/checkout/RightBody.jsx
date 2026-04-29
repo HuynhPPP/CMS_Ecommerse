@@ -1,5 +1,5 @@
 import styles from './styles.module.scss';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { SideBarContext } from '@/contexts/SideBarProvider';
 import Button from '@components/Button/Button';
 import PaymentMethod from '@components/PaymentMethod/PaymentMethod';
@@ -20,7 +20,20 @@ function RightBody({ handleExternalSubmit, register, errors }) {
     sizeProduct,
   } = styles;
 
-  const { listProductCart } = useContext(SideBarContext);
+  const { 
+    listProductCart, 
+    userId, 
+    handleGetListProductsCart, 
+    setListProductCart 
+  } = useContext(SideBarContext);
+
+  useEffect(() => {
+    if (userId) {
+      handleGetListProductsCart(userId, 'cart');
+    } else {
+      setListProductCart([]);
+    }
+  }, [userId]);
 
   return (
     <>

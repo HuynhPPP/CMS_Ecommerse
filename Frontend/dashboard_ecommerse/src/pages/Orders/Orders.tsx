@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Table, Tag, Space, Button, message, Modal, Select, Descriptions, Typography, Divider, Input, Row, Col, Card, Statistic, Timeline } from 'antd';
+import { Table, Tag, Space, Button, message, Modal, Select, Descriptions, Typography, Divider, Input, Row, Col, Card, Statistic, Timeline, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   SearchOutlined,
@@ -210,8 +210,10 @@ const Orders: React.FC = () => {
       </div>
 
       <Table
+        bordered
         columns={columns}
         dataSource={orders}
+        locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         loading={{ spinning: !!loading, tip: loadingTip }}
         rowKey="id"
         pagination={{

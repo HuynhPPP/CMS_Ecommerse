@@ -9,7 +9,8 @@ export const handleAddProductToCartCommon = (
   productId,
   quantity,
   setIsLoading,
-  handleGetListProductsCart
+  handleGetListProductsCart,
+  colorId
 ) => {
   if (!userId) {
     setIsOpen(true);
@@ -28,6 +29,7 @@ export const handleAddProductToCartCommon = (
     productId,
     size: sizeChoose,
     quantity,
+    colorId,
   };
   setIsLoading(true);
   addToCart(data)

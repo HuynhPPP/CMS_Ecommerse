@@ -1,4 +1,5 @@
 import { deleteCartItem } from '@/apis/cartService';
+import { useNavigate } from 'react-router-dom';
 import styles from './styles.module.scss';
 import { IoCloseOutline } from 'react-icons/io5';
 import { useContext, useState } from 'react';
@@ -14,6 +15,8 @@ function ItemProduct({
   quantity,
   cartItemId,
   userId,
+  colorProduct,
+  productId,
 }) {
   const {
     container,
@@ -26,7 +29,15 @@ function ItemProduct({
   } = styles;
 
   const [isRemoveItemCart, setIsRemoveItemCart] = useState(false);
-  const { handleGetListProductsCart } = useContext(SideBarContext);
+  const { handleGetListProductsCart, setIsOpen } = useContext(SideBarContext);
+  const navigate = useNavigate();
+
+  const handleNavigateToDetail = () => {
+    if (productId) {
+      navigate(`/product/${productId}`);
+      setIsOpen(false);
+    }
+  };
 
   const handleRemoveItem = () => {
     setIsRemoveItemCart(true);
@@ -42,7 +53,7 @@ function ItemProduct({
 
   return (
     <div className={container}>
-      <img src={src} alt='' />
+      <img src={src} alt='' onClick={handleNavigateToDetail} style={{ cursor: 'pointer' }} />
 
       <div className={boxClose}>
         <IoCloseOutline
@@ -55,13 +66,14 @@ function ItemProduct({
       </div>
 
       <div className={boxContent}>
-        <div className={title}>{nameProduct}</div>
-        <div className={size}>Size: {sizeProduct}</div>
+        <div className={title} onClick={handleNavigateToDetail} style={{ cursor: 'pointer' }}>{nameProduct}</div>
+        <div className={size}>Kích cỡ: {sizeProduct}</div>
+        <div className={size}>Màu sắc: {colorProduct}</div>
         <div className={price}>
           {' '}
-          {quantity} x ${priceProduct}
+          {quantity} x {new Intl.NumberFormat('vi-VN').format(priceProduct)} VNĐ
         </div>
-        <div className={price}>SKU: {sku}</div>
+
       </div>
 
       {isRemoveItemCart && (

@@ -1,4 +1,4 @@
-import { Image, Table, Tag, Typography, Tooltip, Space } from 'antd';
+import { Image, Table, Tag, Typography, Tooltip, Space, Empty } from 'antd';
 import type { ProductType } from './Type';
 import TableAction from '../../components/common/TableAction';
 import { useState, useEffect } from 'react';
@@ -167,9 +167,11 @@ const ProducsTable = ({
 
   return (
     <Table
+      bordered
       columns={columns}
       dataSource={products}
       rowKey='id'
+      locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
       loading={{ spinning: !!loading, tip: loadingTip }}
       pagination={pagination}
       onChange={onChange}

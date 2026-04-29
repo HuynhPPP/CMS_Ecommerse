@@ -17,27 +17,27 @@ const AppSidebar = () => {
     {
       key: 'dashboard',
       icon: <DashboardOutlined />,
-      label: 'Dashboard',
+      label: 'Tổng quan',
     },
     {
       key: 'products',
       icon: <ShoppingOutlined />,
-      label: 'Products',
+      label: 'Sản phẩm',
     },
     {
       key: 'category',
       icon: <AppstoreOutlined />,
-      label: 'Category',
+      label: 'Danh mục',
     },
     {
       key: 'users',
       icon: <UserOutlined />,
-      label: 'Users',
+      label: 'Người dùng',
     },
     {
       key: 'orders',
       icon: <ShoppingCartOutlined />,
-      label: 'Orders',
+      label: 'Đơn hàng',
     },
   ];
 

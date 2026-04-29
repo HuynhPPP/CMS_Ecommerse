@@ -33,6 +33,7 @@ export const SideBarProvider = ({ children }) => {
               quantity: item.quantity,
               size: item.variant.size,
               color: color.color,
+              colorId: color.id,
               images: color.images.map(img => img.imageUrl),
               sku: `SKU-${product.id}-${item.variant.id}`,
               total: item.variant.price * item.quantity

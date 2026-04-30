@@ -55,17 +55,22 @@ const productsController = {
   getProducts: async (req, res) => {
     try {
       let page = parseInt(req.query.page, 10) || 1;
-      let limit = parseInt(req.query.limit, 10) || 10;
+      let limit;
+      if (req.query.limit === 'all') {
+        limit = 'all';
+      } else {
+        limit = parseInt(req.query.limit, 10) || 10;
+        if (limit < 1) limit = 10;
+        if (limit > 100) limit = 100;
+      }
 
       const search = req.query.search || '';
       const parsedCategoryId = parseInt(req.query.categoryId, 10);
       const categoryId = !Number.isNaN(parsedCategoryId) ? parsedCategoryId : undefined;
 
       if (page < 1) page = 1;
-      if (limit < 1) limit = 10;
-      if (limit > 100) limit = 100;
 
-      const skip = (page - 1) * limit;
+      const skip = limit === 'all' ? undefined : (page - 1) * limit;
 
       const where = {
         isDeleted: false,
@@ -78,14 +83,22 @@ const productsController = {
         ...(categoryId && { categoryId }),
       };
 
+      const sortType = req.query.sortType || '0';
+
+      let orderBy = { id: 'desc' }; // Default (0)
+      if (sortType === '3') {
+        orderBy = { createdAt: 'desc' }; // Latest
+      } else if (sortType === '1' || sortType === '2') {
+        // Currently no rating/popularity fields, fallback to default
+        orderBy = { id: 'desc' };
+      }
+
       const [products, total] = await Promise.all([
         prisma.products.findMany({
           skip,
-          take: limit,
+          take: limit === 'all' ? undefined : limit,
           where,
-          orderBy: {
-            id: 'desc',
-          },
+          orderBy,
           include: {
             category: {
               select: {
@@ -110,7 +123,7 @@ const productsController = {
           total,
           page,
           limit,
-          pageCount: Math.ceil(total / limit),
+          pageCount: limit === 'all' ? 1 : Math.ceil(total / limit),
         },
       });
     } catch (error) {

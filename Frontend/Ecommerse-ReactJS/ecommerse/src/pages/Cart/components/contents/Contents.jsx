@@ -109,16 +109,16 @@ function Contents() {
 
             <div className={boxFooter}>
               <div className={boxCoupon}>
-                <input type='text' placeholder='Coupon code' />
+                <input type='text' placeholder='Mã giảm giá' />
                 <Button content={'OK'} isPrimary={false} />
               </div>
 
               <div className={boxBtnClear}>
                 <Button
                   content={
-                    <div>
-                      <IoTrashOutline /> CLEAR SHOPPING CART
-                    </div>
+                    <>
+                      <IoTrashOutline style={{ fontSize: '18px' }} /> XÓA GIỎ HÀNG
+                    </>
                   }
                   isPrimary={false}
                   onClick={handleDeleteCart}
@@ -137,13 +137,13 @@ function Contents() {
               fontSize: '50px',
             }}
           />
-          <div className={titleEmpty}>YOUR SHOPPING CART IS EMPTY</div>
+          <div className={titleEmpty}>GIỎ HÀNG CỦA BẠN TRỐNG</div>
           <div>
-            We invite you to get acquainted with an assortment of our shop.
-            Surely you can find something for yourself!
+            Chúng tôi mời bạn tham khảo các mặt hàng trong cửa hàng của chúng tôi.
+            Chắc chắn bạn sẽ tìm thấy thứ gì đó cho riêng mình!
           </div>
           <div className={boxBtnEmpty}>
-            <Button content={'RETURN TO SHOP'} onClick={handleNavigateToShop} />
+            <Button content={'QUAY LẠI CỬA HÀNG'} onClick={handleNavigateToShop} />
           </div>
         </div>
       )}

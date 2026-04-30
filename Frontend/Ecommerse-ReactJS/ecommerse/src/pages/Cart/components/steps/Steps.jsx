@@ -6,9 +6,9 @@ import { StepperContext } from '@/contexts/StepperProvider';
 function Steps() {
   const { containerSteps, steps, line, textNote } = styles;
   const dataSteps = [
-    { number: 1, content: 'SHOPPING CART' },
-    { number: 2, content: 'CHECKOUT' },
-    { number: 3, content: 'ORDER STATUS' },
+    { number: 1, content: 'GIỎ HÀNG' },
+    { number: 2, content: 'THANH TOÁN' },
+    { number: 3, content: 'TRẠNG THÁI ĐƠN HÀNG' },
   ];
   const { setCurrentStep, currentStep } = useContext(StepperContext);
   return (
@@ -31,7 +31,7 @@ function Steps() {
       </div>
 
       <div className={textNote}>
-        You are out of time! Checkout now to avoid losing your order!
+        Cảm ơn bạn đã lựa chọn sản phẩm của chúng tôi. Hãy tiến hành thanh toán để hoàn tất đơn hàng!
       </div>
     </div>
   );

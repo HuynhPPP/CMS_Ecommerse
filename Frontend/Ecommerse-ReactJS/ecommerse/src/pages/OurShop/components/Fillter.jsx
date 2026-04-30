@@ -8,7 +8,7 @@ import SelectBox from '@pages/OurShop/components/SelectBox';
 
 function Fillter() {
   const { containerFillter, boxIcon, boxLeft, selectBox, sort, show } = styles;
-  const { showOptions, sortOptions, setSortId, setShowId, setIsShowGrid } =
+  const { showOptions, sortOptions, setSortId, setShowId, setIsShowGrid, sortId, showId } =
     useContext(OurShopContext);
 
   const getValueSelect = (value, type) => {
@@ -30,6 +30,7 @@ function Fillter() {
           options={sortOptions}
           getValues={getValueSelect}
           type='sort'
+          defaultValue={sortId}
         />
 
         <div className={boxIcon}>
@@ -58,12 +59,13 @@ function Fillter() {
             color: '#555',
           }}
         >
-          Show
+          Hiển thị
         </div>
         <SelectBox
           options={showOptions}
           getValues={getValueSelect}
           type='show'
+          defaultValue={showId}
         />
       </div>
     </div>

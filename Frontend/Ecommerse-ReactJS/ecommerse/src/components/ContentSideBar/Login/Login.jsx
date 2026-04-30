@@ -26,14 +26,14 @@ function Login() {
       cfmpassword: '',
     },
     validationSchema: Yup.object({
-      username: isRegister ? Yup.string().required('Username is required') : Yup.string(),
-      email: Yup.string().email('Invalid email').required('Email is required'),
+      username: isRegister ? Yup.string().required('Vui lòng nhập tên người dùng') : Yup.string(),
+      email: Yup.string().email('Email không đúng định dạng').required('Vui lòng nhập email!'),
       password: Yup.string()
-        .min(6, 'Password must be at least at 6 characters')
-        .required('Password is required'),
+        .min(6, 'Mật khẩu phải từ 6 ký tự trở lên')
+        .required('Vui lòng nhập mật khẩu'),
       cfmpassword: Yup.string().oneOf(
         [Yup.ref('password'), null],
-        'Password must match'
+        'Mật khẩu xác nhận không khớp'
       ),
     }),
     onSubmit: (values) => {
@@ -53,12 +53,13 @@ function Login() {
         login({ email: values.email, password: values.password })
           .then((res) => {
             setIsLoading(false);
-            const { user } = res;
-            
+            const { user, token } = res;
+
             // Lưu thông tin vào Cookies và Store
+            Cookies.set('token', token);
             Cookies.set('userId', user.id);
             setUserId(user.id);
-            
+
             toast.success('Đăng nhập thành công!');
             setIsOpen(false); // Đóng sidebar
             handleGetListProductsCart(user.id, 'cart'); // Cập nhật giỏ hàng
@@ -78,13 +79,13 @@ function Login() {
 
   return (
     <div className={container}>
-      <div className={title}>{isRegister ? 'SIGN UP' : 'SIGN IN'}</div>
+      <div className={title}>{isRegister ? 'Đăng Ký' : 'Đăng Nhập'}</div>
 
       <form onSubmit={formik.handleSubmit}>
         {isRegister && (
           <InputCommon
             id='username'
-            label='Username'
+            label='Tên người dùng'
             type='text'
             isRequired
             formik={formik}
@@ -100,7 +101,7 @@ function Login() {
 
         <InputCommon
           id='password'
-          label='Password'
+          label='Mật khẩu'
           type='password'
           isRequired
           formik={formik}
@@ -109,7 +110,7 @@ function Login() {
         {isRegister && (
           <InputCommon
             id='cfmpassword'
-            label='Confirm Password'
+            label='Xác nhận mật khẩu'
             type='password'
             isRequired
             formik={formik}
@@ -119,20 +120,20 @@ function Login() {
         {!isRegister && (
           <div className={boxRememberMe}>
             <input type='checkbox' />
-            <span>Remember me</span>
+            <span>Ghi nhớ đăng nhập</span>
           </div>
         )}
 
         <Button
           content={
-            isLoading ? 'LOADING...' : isRegister ? 'REGISTER' : 'LOG IN'
+            isLoading ? 'Đang xử lý...' : isRegister ? 'Đăng ký' : 'Đăng nhập'
           }
           type='submit'
         />
       </form>
       <Button
         content={
-          isRegister ? 'Already have an account?' : "Don't have an account?"
+          isRegister ? 'Bạn đã có tài khoản?' : "Chưa có tài khoản?"
         }
         type='submit'
         isPrimary={false}
@@ -140,7 +141,7 @@ function Login() {
         onClick={handleToggle}
       />
 
-      {!isRegister && <div className={lostPassword}>Lost your password ?</div>}
+      {!isRegister && <div className={lostPassword}>Quên mật khẩu ?</div>}
     </div>
   );
 }

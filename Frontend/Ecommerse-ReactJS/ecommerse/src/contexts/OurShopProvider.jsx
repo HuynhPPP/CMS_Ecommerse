@@ -80,6 +80,8 @@ export const OurShopProvider = ({ children }) => {
     isLoadMore,
     handleLoadMore,
     total,
+    sortId,
+    showId,
   };
 
   useEffect(() => {

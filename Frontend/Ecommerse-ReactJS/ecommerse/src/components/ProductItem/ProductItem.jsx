@@ -186,7 +186,7 @@ function ProductItem({
 
         {sizeChoose && (
           <div className={btnClear} onClick={() => handleClearSize()}>
-            clear
+            Xoá lựa chọn
           </div>
         )}
 
@@ -205,7 +205,7 @@ function ProductItem({
               color: '#888',
             }}
           >
-            Brand 01
+            {details?.category?.name}
           </div>
         )}
 
@@ -217,7 +217,7 @@ function ProductItem({
             color: isHomePage ? '#333' : '#888',
           }}
         >
-          ${price}
+          {new Intl.NumberFormat('vi-VN').format(price)} VNĐ
         </div>
 
         {!isHomePage && (
@@ -227,7 +227,7 @@ function ProductItem({
             })}
           >
             <Button
-              content={isLoading ? <LoadingTextCommon /> : 'ADD TO CART'}
+              content={isLoading ? <LoadingTextCommon /> : 'Thêm vào giỏ hàng'}
               onClick={handleAddToCart}
             />
           </div>

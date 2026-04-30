@@ -138,7 +138,7 @@ function ProductDetail() {
 
   const handleAddToCart = () => {
     if (!colorSelected || !sizeSelected) return;
-    
+
     // Tìm variant ID nếu cần, hoặc gửi info trực tiếp tùy logic cartService
     handleAddProductToCartCommon(
       userId,
@@ -168,14 +168,14 @@ function ProductDetail() {
     setIsLoadingBtnBuyNow(true);
     addProductToCart(body)
       .then((res) => {
-        toast.success('Add Product to cart successfully');
+        toast.success('Thêm vào giỏ hàng thành công');
         setIsLoadingBtnBuyNow(false);
         handleGetListProductsCart(userId, 'cart');
         navigate('/cart');
       })
       .catch((err) => {
         console.log(err);
-        toast.error('Add Product to cart failed');
+        toast.error('Thêm vào giỏ hàng thất bại');
         setIsLoadingBtnBuyNow(false);
       });
   };
@@ -188,7 +188,7 @@ function ProductDetail() {
   }, [param.id]);
 
   // Lấy giá hiển thị (lấy từ variant đầu tiên của màu đang chọn)
-  const currentPrice = colorSelected?.variants?.[0]?.price 
+  const currentPrice = colorSelected?.variants?.[0]?.price
     ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(colorSelected.variants[0].price)
     : 'Liên hệ';
 
@@ -199,10 +199,10 @@ function ProductDetail() {
         <MainLayout>
           <div className={functionBox}>
             <div>
-              Home &gt; <span className={specialText}>{data?.category?.name || 'Sản phẩm'}</span>
+              Trang chủ &gt; <span className={specialText}>{data?.name || 'Sản phẩm'}</span>
             </div>
             <div className={btnBack} onClick={() => handleBackPrePage()}>
-              &lt; Return to previous page
+              &lt; Quay lại trang trước
             </div>
           </div>
 
@@ -219,10 +219,10 @@ function ProductDetail() {
                         <path d='M12 10L9 13H11V16H13V13H15L12 10Z' fill='currentColor' opacity='0.6' />
                       </svg>
                     </div>
-                    <h1 className={styles.errorTitle}>Product Not Found</h1>
-                    <p className={styles.errorDescription}>We couldn't find the product you're looking for.</p>
+                    <h1 className={styles.errorTitle}>Sản phẩm không tồn tại</h1>
+                    <p className={styles.errorDescription}>Chúng tôi không tìm thấy sản phẩm bạn đang tìm kiếm.</p>
                     <div className={styles.errorActions}>
-                      <Button content='Go to Home' onClick={() => navigate('/')} />
+                      <Button content='Trở về trang chủ' onClick={() => navigate('/')} />
                     </div>
                   </div>
                 </div>
@@ -238,16 +238,16 @@ function ProductDetail() {
                         height={350}
                       />
                     ))}
-                    {!colorSelected?.images?.length && <div style={{width: 295, height: 350, background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>No Image</div>}
+                    {!colorSelected?.images?.length && <div style={{ width: 295, height: 350, background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Không có ảnh</div>}
                   </div>
-                  
+
                   <div className={infoBox}>
                     <h1>{data?.name}</h1>
                     <p className={price}>{currentPrice}</p>
                     <p className={descreption}>{data?.description}</p>
 
                     {/* Lựa chọn Màu sắc - Thêm mới để phù hợp API */}
-                    <p className={titleSize}>Color: {colorSelected?.color}</p>
+                    <p className={titleSize}>Màu sắc: {colorSelected?.color}</p>
                     <div className={boxSize} style={{ marginBottom: '20px' }}>
                       {data?.colors?.map((item, index) => (
                         <div
@@ -283,7 +283,7 @@ function ProductDetail() {
                       ))}
                       {sizeSelected && (
                         <p className={btnClear} onClick={handleClearSize}>
-                          clear
+                          Hủy chọn
                         </p>
                       )}
                     </div>
@@ -299,7 +299,7 @@ function ProductDetail() {
                           content={
                             isLoadingBtn ? <LoadingTextCommon /> : (
                               <>
-                                <PiShoppingCart /> ADD TO CART
+                                <PiShoppingCart /> THÊM VÀO GIỎ HÀNG
                               </>
                             )
                           }
@@ -318,7 +318,7 @@ function ProductDetail() {
                         content={
                           isLoadingBtnBuyNow ? <LoadingTextCommon /> : (
                             <>
-                              <PiShoppingCart /> BUY NOW
+                              <PiShoppingCart /> MUA NGAY
                             </>
                           )
                         }
@@ -337,9 +337,9 @@ function ProductDetail() {
                     </div>
 
                     <div className={infoProduct}>
-                      <div>Brand: <span>{data?.brand || 'N/A'}</span></div>
+                      <div>Thương hiệu: <span>{data?.brand || 'N/A'}</span></div>
                       <div>SKU: <span>{data?.id}</span></div>
-                      <div>Category: <span>{data?.category?.name}</span></div>
+                      <div>Danh mục: <span>{data?.category?.name}</span></div>
                     </div>
 
                     {dataAccordionMenu.map((item, index) => (

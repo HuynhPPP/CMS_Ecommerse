@@ -45,7 +45,7 @@ function ListProducts() {
                 const firstColor = item.colors?.[0];
                 const images = firstColor?.images || [];
                 const variants = firstColor?.variants || [];
-                
+
                 return (
                   <ProductItem
                     key={item.id}
@@ -68,7 +68,7 @@ function ListProducts() {
               >
                 <Button
                   content={
-                    isLoadMore ? <LoadingTextCommon /> : 'LOAD MORE PRODUCTS'
+                    isLoadMore ? <LoadingTextCommon /> : 'Xem thêm'
                   }
                   isPrimary={false}
                   onClick={handleLoadMore}

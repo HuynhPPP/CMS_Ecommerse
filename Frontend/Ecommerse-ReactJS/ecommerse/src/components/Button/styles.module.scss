@@ -6,6 +6,10 @@
   font-size: 14px;
   font-weight: 300;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 
   &:hover {
     transition: background-color 300ms;

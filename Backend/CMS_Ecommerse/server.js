@@ -4,6 +4,7 @@ const cors = require('cors');
 dotenv.config();
 
 const routes = require('./routes');
+const { swaggerUi, specs } = require('./swagger');
 
 const port = process.env.PORT || 5001;
 
@@ -17,6 +18,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api', routes);
+
+// Swagger Documentation Route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.listen(port, () => {
   console.log(`Server is running on port 'localhost:${port}'`);

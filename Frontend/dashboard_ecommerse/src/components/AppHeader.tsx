@@ -8,18 +8,16 @@ const { Header } = Layout;
 const AppHeader = () => {
   const { isDark, toggleTheme } = useContext(ThemeContext);
 
+  const storeUrl = import.meta.env.DEV ? 'http://localhost:5174/' : 'https://cms-ecommerse-wyrm.vercel.app/';
+
   const menuItems = [
     {
-      key: 'Profile',
-      label: 'Profile',
-    },
-    {
-      key: 'Settings',
-      label: 'Settings',
-    },
-    {
-      key: 'Logout',
-      label: 'Logout',
+      key: 'MyStore',
+      label: (
+        <a href={storeUrl} target="_blank" rel="noopener noreferrer">
+          Cửa hàng của tôi
+        </a>
+      ),
     },
   ];
 
@@ -34,11 +32,14 @@ const AppHeader = () => {
           {isDark ? <BulbOutlined /> : <MoonOutlined />}
         </button>
         <Dropdown placement='bottomRight' menu={{ items: menuItems }}>
-          <Avatar
+          {/* <Avatar
             size='large'
             icon={<UserOutlined />}
             className='cursor-pointer'
-          />
+          /> */}
+          <div className='cursor-pointer'>
+            <img src="/avatar.png" alt="Profile" className='w-11 h-11 rounded-full object-cover' />
+          </div>
         </Dropdown>
       </div>
     </Header>

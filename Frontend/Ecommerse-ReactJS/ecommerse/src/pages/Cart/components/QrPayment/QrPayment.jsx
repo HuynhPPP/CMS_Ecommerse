@@ -178,22 +178,6 @@ function QrPayment() {
               )}
             </div>
           </div>
-
-          <p className={qrWarning}>
-            📱 Sử dụng ứng dụng ngân hàng của bạn để quét mã QR này
-          </p>
-
-          <div className={actionButtons}>
-            <button
-              className={cls(button, buttonSecondary)}
-              disabled={isExpired}
-            >
-              📱 Mở trong Ứng dụng Ngân hàng
-            </button>
-            <button className={cls(button, buttonPrimary)} disabled={isExpired}>
-              ⬇ Tải mã QR
-            </button>
-          </div>
         </div>
 
         {/* Right Section - Payment Details */}
@@ -223,18 +207,21 @@ function QrPayment() {
 
             <div className={detailRow}>
               <span className={detailLabel}>Số Tiền</span>
-              <span className={detailValue}>{amount}</span>
+              <span className={detailValue}> {new Intl.NumberFormat('vi-VN').format(amount)} VNĐ</span>
             </div>
 
             <div className={detailRow}>
               <span className={detailLabel}>Nội Dung Chuyển Khoản</span>
-              <span className={detailValue}>{id}</span>
+              <span className={detailValue}>ID đơn hàng - {id}</span>
             </div>
 
             {/* Total Amount */}
             <div className={totalAmount}>
               <span className={totalLabel}>Tổng Tiền</span>
-              <span className={totalValue}>{amount} VNĐ</span>
+
+              <span className={totalValue}>
+                {new Intl.NumberFormat('vi-VN').format(amount)} VNĐ
+              </span>
             </div>
           </div>
 
@@ -245,15 +232,10 @@ function QrPayment() {
               <li>Mở ứng dụng ngân hàng của bạn</li>
               <li>Quét mã QR hoặc sử dụng nút "Mở trong Ứng dụng Ngân hàng"</li>
               <li>
-                Nhập chính xác: <strong>{id}</strong> vào nội dung chuyển khoản
+                Nhập chính xác: <strong>ID đơn hàng - {id}</strong> vào nội dung chuyển khoản
               </li>
               <li>Hoàn tất thanh toán</li>
             </ol>
-          </div>
-
-          {/* Waiting Status */}
-          <div className={waitingStatus}>
-            <span className={spinner}>⏳</span> Đang chờ thanh toán của bạn...
           </div>
         </div>
       </div>

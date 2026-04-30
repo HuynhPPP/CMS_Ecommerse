@@ -1,0 +1,75 @@
+tags:
+  name: Carts
+  description: Cart management API
+
+paths:
+  /api/cart/{userId}:
+    get:
+      summary: Get cart by user ID
+      tags: [Carts]
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cart found
+
+  /api/cart:
+    post:
+      summary: Add item to cart
+      tags: [Carts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                productId:
+                  type: string
+                quantity:
+                  type: number
+      responses:
+        '200':
+          description: Item added
+
+  /api/cart/deleteItem:
+    delete:
+      summary: Delete an item from cart
+      tags: [Carts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                productId:
+                  type: string
+      responses:
+        '200':
+          description: Item deleted
+
+  /api/cart/delete:
+    delete:
+      summary: Clear entire cart
+      tags: [Carts]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Cart cleared

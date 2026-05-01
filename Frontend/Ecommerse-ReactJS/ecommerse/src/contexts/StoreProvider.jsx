@@ -14,7 +14,7 @@ export const StoreProvider = ({ children }) => {
     Cookies.remove('userId');
 
     setUserInfo(null);
-    window.location.reload();
+    window.location.href = '/';
   };
 
   useEffect(() => {

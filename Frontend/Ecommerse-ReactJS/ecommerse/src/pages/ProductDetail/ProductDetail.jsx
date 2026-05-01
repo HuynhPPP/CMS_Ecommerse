@@ -77,18 +77,18 @@ function ProductDetail() {
   const dataAccordionMenu = [
     {
       id: 1,
-      titleMenu: 'ADDITIONAL INFORMATION',
-      contentAccordion: <InformationProduct />,
+      titleMenu: 'THÔNG TIN BỔ SUNG',
+      contentAccordion: <InformationProduct data={data} />,
     },
     {
       id: 2,
-      titleMenu: 'REVIEW (0)',
+      titleMenu: 'ĐÁNH GIÁ & NHẬN XÉT (0)',
       contentAccordion: <Review />,
     },
   ];
 
   const handleSetMenuSelected = (id) => {
-    setMenuSelected(id);
+    setMenuSelected((prevId) => (prevId === id ? null : id));
   };
 
   const handleSelectSize = (size) => {
@@ -360,7 +360,7 @@ function ProductDetail() {
           {/* RELATED PRODUCTS */}
           {dataRelated.length > 0 && (
             <div className={containerRelated}>
-              <h2>Related products</h2>
+              <h2>Sản phẩm liên quan</h2>
               <SliderCommon
                 data={dataRelated}
                 isProductItem

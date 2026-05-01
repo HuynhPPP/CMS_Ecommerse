@@ -50,16 +50,16 @@ function NotFound() {
             </div>
 
             <h1 className={errorCode}>404</h1>
-            <h2 className={errorTitle}>Page Not Found</h2>
+            <h2 className={errorTitle}>Không tìm thấy trang</h2>
             <p className={errorDescription}>
-              The page you are looking for might have been removed, had its name
-              changed, or is temporarily unavailable.
+              Không tìm thấy trang bạn yêu cầu, có thể trang đã bị xóa, đổi
+              tên hoặc tạm thời không khả dụng.
             </p>
 
             <div className={errorActions}>
-              <Button content='Go to Home' onClick={() => navigate('/')} />
+              <Button content='Trang chủ' onClick={() => navigate('/')} />
               <button className={btnSecondary} onClick={() => navigate(-1)}>
-                Go Back
+                Quay lại
               </button>
             </div>
           </div>

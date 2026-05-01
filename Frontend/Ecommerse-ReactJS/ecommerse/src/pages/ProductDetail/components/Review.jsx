@@ -14,26 +14,28 @@ function Review() {
   } = styles;
   return (
     <div className={containerReview}>
-      <div className={reviews}>REVIEWS</div>
+      <div className={reviews}>ĐÁNH GIÁ & NHẬN XÉT</div>
 
-      <p className={noReview}>There are no reviews yet.</p>
+      <p className={noReview}>Chưa có đánh giá nào...</p>
 
       <div className={replyForm}>
         <div className={commentReplyTitle}>
-          BE THE FIRST TO REVIEW "10K YELLOW JACKET"
+          BE THE FIRST TO REVIEW "TÊN SẢN PHẨM"
         </div>
 
         <p className={commentNotes}>
-          Your email address will not be published. Required fields are marked
+          Địa chỉ email của bạn sẽ không được công khai. Các trường bắt buộc
+          được đánh dấu
+          <span>*</span>
         </p>
 
         <form action=''>
           {/* RATING */}
-          <FormItem label={'Your rating'} typeChildren={'rating'} isRequired />
+          <FormItem label={'Đánh giá của bạn'} typeChildren={'rating'} isRequired />
 
           {/* REVIEW */}
           <FormItem
-            label={'Your review'}
+            label={'Nhận xét của bạn'}
             typeChildren={'textarea'}
             isRequired
           />
@@ -48,12 +50,12 @@ function Review() {
           <div className={commentFormSave}>
             <input type='checkbox' />
             <span>
-              Save my name, email, and website in this browser for the next time
-              I comment.
+              Lưu tên, email và trang web của tôi trong trình duyệt này cho lần
+              bình luận tiếp theo.
             </span>
           </div>
 
-          <Button content={'SUBMIT'} />
+          <Button content={'GỬI'} />
         </form>
       </div>
     </div>

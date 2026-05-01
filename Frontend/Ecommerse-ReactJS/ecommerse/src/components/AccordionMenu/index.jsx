@@ -1,6 +1,5 @@
 import styles from './styles.module.scss';
 import cls from 'classnames';
-import { RiArrowDownWideLine } from 'react-icons/ri';
 import { TfiLayoutLineSolid } from 'react-icons/tfi';
 
 function AccordionMenu({ titleMenu, contentAccordion, onClick, isSelected }) {

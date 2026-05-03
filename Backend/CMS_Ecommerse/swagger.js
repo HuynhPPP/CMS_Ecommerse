@@ -15,6 +15,10 @@ const options = {
     },
     servers: [
       {
+        url: 'https://api-ecommerse.onrender.com',
+        description: 'Production server',
+      },
+      {
         url: 'http://localhost:8386',
         description: 'Development server',
       },

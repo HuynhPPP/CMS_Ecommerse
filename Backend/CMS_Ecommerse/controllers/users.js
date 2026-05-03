@@ -7,10 +7,6 @@ const UsersControllers = {
     try {
       const { email, password } = req.body;
 
-      if (!email || !password) {
-        return res.status(400).json({ message: 'Vui lòng nhập Email và Mật khẩu' });
-      }
-
       // 1. Tìm user theo email
       const user = await prisma.user.findFirst({
         where: { email, isDeleted: false },
@@ -54,10 +50,6 @@ const UsersControllers = {
   register: async (req, res) => {
     try {
       const { username, email, password } = req.body;
-
-      if (!username || !email || !password) {
-        return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin' });
-      }
 
       // 1. Kiểm tra username hoặc email đã tồn tại chưa
       const existingUser = await prisma.user.findFirst({
@@ -169,10 +161,6 @@ const UsersControllers = {
   getUserById: async (req, res) => {
     try {
       const { id } = req.params;
-      
-      if (!id || isNaN(Number(id))) {
-        return res.status(400).json({ message: 'User ID is required and must be a number' });
-      }
 
       const user = await prisma.user.findUnique({
         where: {

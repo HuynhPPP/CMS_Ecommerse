@@ -5,12 +5,6 @@ const productsController = {
     try {
       const { name, description, categoryId, colors } = req.body;
 
-      if (!name || !categoryId) {
-        return res
-          .status(400)
-          .json({ error: 'Name and categoryId are required' });
-      }
-
       const product = await prisma.products.create({
         data: {
           name,

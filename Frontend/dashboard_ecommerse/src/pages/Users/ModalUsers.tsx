@@ -32,7 +32,7 @@ const ModalUsers = ({ open, onCancel, onOk, initialValues, loading }: Props) => 
 
   return (
     <Modal
-      title="Update User"
+      title={initialValues ? 'Cập nhật người dùng' : 'Thêm người dùng'}
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
@@ -42,8 +42,8 @@ const ModalUsers = ({ open, onCancel, onOk, initialValues, loading }: Props) => 
       <Form form={form} layout="vertical" name="modal_user">
         <Form.Item
           name="username"
-          label="Username"
-          rules={[{ required: true, message: 'Please input username!' }]}
+          label="Tên đăng nhập"
+          rules={[{ required: true, message: 'Vui lòng nhập tên đăng nhập!' }]}
         >
           <Input />
         </Form.Item>
@@ -52,17 +52,25 @@ const ModalUsers = ({ open, onCancel, onOk, initialValues, loading }: Props) => 
           name="email"
           label="Email"
           rules={[
-            { required: true, message: 'Please input email!' },
-            { type: 'email', message: 'Please input a valid email!' },
+            { required: true, message: 'Vui lòng nhập email!' },
+            { type: 'email', message: 'Email không đúng định dạng!' },
           ]}
         >
           <Input />
         </Form.Item>
 
         <Form.Item
+          name="password"
+          label="Mật khẩu"
+          rules={[{ min: 6, message: 'Mật khẩu phải từ 6 ký tự trở lên!' }]}
+        >
+          <Input.Password placeholder="Để trống nếu không thay đổi" />
+        </Form.Item>
+
+        <Form.Item
           name="role"
-          label="Role"
-          rules={[{ required: true, message: 'Please select role!' }]}
+          label="Vai trò"
+          rules={[{ required: true, message: 'Vui lòng chọn vai trò!' }]}
         >
           <Select>
             <Select.Option value="ADMIN">ADMIN</Select.Option>
@@ -70,8 +78,8 @@ const ModalUsers = ({ open, onCancel, onOk, initialValues, loading }: Props) => 
           </Select>
         </Form.Item>
 
-        <Form.Item name="isActive" label="Status" valuePropName="checked">
-          <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+        <Form.Item name="isActive" label="Trạng thái" valuePropName="checked">
+          <Switch checkedChildren="Hoạt động" unCheckedChildren="Khóa" />
         </Form.Item>
       </Form>
     </Modal>

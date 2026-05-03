@@ -128,10 +128,6 @@ const ordersController = {
       const { id } = req.params;
       const orderId = parseInt(id);
 
-      if (isNaN(orderId)) {
-        return res.status(400).json({ message: 'ID đơn hàng không hợp lệ' });
-      }
-
       const order = await prisma.order.findUnique({
         where: { id: orderId },
         include: {

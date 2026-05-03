@@ -13,6 +13,9 @@ app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const { apiLimiter } = require('./middlewares/rateLimiter');
+app.use('/api', apiLimiter);
+
 app.get('/', (req, res) => {
   res.send('API is running');
 });

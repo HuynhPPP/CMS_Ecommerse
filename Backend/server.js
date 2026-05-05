@@ -9,6 +9,17 @@ const { swaggerUi, specs } = require('./swagger');
 const port = process.env.PORT || 5001;
 
 const app = express();
+const logger = require('./lib/logger');
+
+// Middleware ghi log mọi request gửi tới ELK
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`, {
+    ip: req.ip,
+    userAgent: req.get('User-Agent')
+  });
+  next();
+});
+
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

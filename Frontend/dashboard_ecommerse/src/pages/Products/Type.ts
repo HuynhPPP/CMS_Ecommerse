@@ -29,6 +29,10 @@ export interface ProductType {
     name: string;
   };
   colors: Colors[];
+  moreDetails?: string[];
+  sizeAndFit?: string[];
+  guarantee?: string;
+  sizeChartImage?: string;
 }
 
 export interface ProductPayload {
@@ -36,6 +40,10 @@ export interface ProductPayload {
   description: string;
   categoryId: number;
   colors: Colors[];
+  moreDetails?: string[];
+  sizeAndFit?: string[];
+  guarantee?: string;
+  sizeChartImage?: string;
 }
 
 export interface PaginationMeta {

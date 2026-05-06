@@ -1,11 +1,10 @@
 import {
-  Children,
   createContext,
   useContext,
   useEffect,
   useState,
 } from 'react';
-import { getProducts } from '@/apis/productsService';
+import { getProducts, searchProductsByELK } from '@/apis/productsService';
 import { ToastContext } from './ToastProvider';
 
 export const OurShopContext = createContext();
@@ -15,11 +14,9 @@ export const OurShopProvider = ({ children }) => {
 
   const sortOptions = [
     { label: 'Default sorting', value: '0' },
-    { label: 'Sort by popularity', value: '1' },
-    { label: 'Sort by average rating', value: '2' },
-    { label: 'Sort by latest', value: '3' },
-    { label: 'Sort by price: low to high', value: '4' },
-    { label: 'Sort by price: high to low', value: '5' },
+    { label: 'Sort by latest', value: 'latest' },
+    { label: 'Sort by price: low to high', value: 'price_asc' },
+    { label: 'Sort by price: high to low', value: 'price_desc' },
   ];
 
   const showOptions = [
@@ -37,36 +34,54 @@ export const OurShopProvider = ({ children }) => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  const handleLoadMore = () => {
-    const query = {
-      sortType: sortId,
-      page: +page + 1,
-      limit: showId,
-    };
-    setIsLoadMore(true);
-    getProducts(query)
-      .then((res) => {
-        setProducts((prev) => {
-          return [...prev, ...(res.data || [])];
-        });
-        setPage(+res.meta?.page || 1);
-        setTotal(res.meta?.total || 0);
-        setIsLoadMore(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoadMore(false);
+  // Hàm xử lý chung để lấy dữ liệu (Tự động chọn API phù hợp)
+  const fetchData = async (isMore = false) => {
+    const currentPage = isMore ? page + 1 : 1;
+    const limit = showId === 'all' ? 100 : parseInt(showId);
+    
+    // Nếu sortId là giá hoặc latest -> Dùng ELK. Ngược lại dùng API gốc.
+    const useELK = ['latest', 'price_asc', 'price_desc'].includes(sortId);
 
-        // Show appropriate error message
-        if (err.isTimeout) {
-          toast.error('Request timeout. Please try again!');
-        } else if (err.isNetworkError) {
-          toast.error('Network error. Please check your internet connection!');
-        } else {
-          toast.error('Failed to load more products. Please try again!');
-        }
-      });
+    try {
+      let res;
+      if (useELK) {
+        res = await searchProductsByELK({
+          sort: sortId,
+          page: currentPage,
+          limit: limit
+        });
+        // Map dữ liệu từ ELK (results, total)
+        const newProducts = res.results || [];
+        setProducts(prev => isMore ? [...prev, ...newProducts] : newProducts);
+        setTotal(res.total || 0);
+      } else {
+        res = await getProducts({
+          sortType: sortId,
+          page: currentPage,
+          limit: limit
+        });
+        // Map dữ liệu từ API gốc (data, meta.total)
+        const newProducts = res.data || [];
+        setProducts(prev => isMore ? [...prev, ...newProducts] : newProducts);
+        setTotal(res.meta?.total || 0);
+      }
+      
+      if (isMore) setPage(currentPage);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load products.');
+    }
   };
+
+  const handleLoadMore = () => {
+    setIsLoadMore(true);
+    fetchData(true).finally(() => setIsLoadMore(false));
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchData(false).finally(() => setIsLoading(false));
+  }, [sortId, showId]);
 
   const values = {
     sortOptions,
@@ -83,41 +98,6 @@ export const OurShopProvider = ({ children }) => {
     sortId,
     showId,
   };
-
-  useEffect(() => {
-    const query = {
-      sortType: sortId,
-      page: 1,
-      limit: showId,
-    };
-    setIsLoading(true);
-
-    // TODO: Remove this setTimeout after testing skeleton loader
-    // Delay the entire fetch to see skeleton for 3 seconds
-    setTimeout(() => {
-      getProducts(query)
-        .then((res) => {
-          setProducts(res.data || []);
-          setTotal(res.meta?.total || 0);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setIsLoading(false);
-
-          // Show appropriate error message
-          if (err.isTimeout) {
-            toast.error('Request timeout. Please try again!');
-          } else if (err.isNetworkError) {
-            toast.error(
-              'Network error. Please check your internet connection!'
-            );
-          } else {
-            toast.error('Failed to load products. Please try again!');
-          }
-        });
-    });
-  }, [sortId, showId]);
 
   return (
     <OurShopContext.Provider value={values}>{children}</OurShopContext.Provider>

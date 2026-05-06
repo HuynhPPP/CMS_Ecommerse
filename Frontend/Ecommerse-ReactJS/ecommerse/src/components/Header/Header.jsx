@@ -12,6 +12,7 @@ import classNames from 'classnames';
 import { SideBarContext } from '@/contexts/SideBarProvider';
 import { useNavigate } from 'react-router-dom';
 import { StoreContext } from '@/contexts/StoreProvider';
+import { getSettings } from '@/apis/settingService';
 
 function MyHeader() {
   const {
@@ -37,6 +38,7 @@ function MyHeader() {
   } = useContext(SideBarContext);
 
   const { userInfo } = useContext(StoreContext);
+  const [settings, setSettings] = useState(null);
 
   const navigate = useNavigate();
 
@@ -59,6 +61,10 @@ function MyHeader() {
     setFixedPosition(scrollPosition > 80);
   }, [scrollPosition]);
 
+  useEffect(() => {
+    getSettings().then(res => setSettings(res)).catch(err => console.log(err));
+  }, []);
+
   return (
     <div
       className={classNames(container, topHeader, {
@@ -75,19 +81,20 @@ function MyHeader() {
           <div className={containerMenu}>
             {dataMenu.slice(0, 3).map((item, index) => {
               return (
-                <Menu key={index} content={item.content} href={item.href} />
+                <Menu key={index} title={item.title} content={item.content} href={item.href} />
               );
             })}
           </div>
         </div>
         <div>
           <img
-            src={Logo}
+            src={settings?.logoUrl || Logo}
             alt='Logo'
             style={{
               width: '153px',
               height: '53px',
               cursor: 'pointer',
+              objectFit: 'contain',
             }}
             onClick={() => navigate('/')}
           />
@@ -98,6 +105,7 @@ function MyHeader() {
               return (
                 <Menu
                   key={index}
+                  title={item.title}
                   content={item.content}
                   href={item.href}
                   setIsOpen={setIsOpen}

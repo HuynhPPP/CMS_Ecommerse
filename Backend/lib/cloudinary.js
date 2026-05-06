@@ -14,8 +14,7 @@ const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'cms_ecommerce', // Tên thư mục trên Cloudinary
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'avif'],
-        transformation: [{ width: 800, height: 800, crop: 'limit' }] // Tự động tối ưu ảnh
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'avif', 'gif'],
     }
 });
 

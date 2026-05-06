@@ -8,7 +8,7 @@ const CategoriesControllers = {
         data: {
           name,
           slug,
-          isActive,
+          isActive: typeof isActive === 'string' ? isActive === 'true' : isActive,
         },
       });
       res.send(newCategory);
@@ -103,7 +103,7 @@ const CategoriesControllers = {
         data: {
           name,
           slug,
-          isActive,
+          isActive: typeof isActive === 'string' ? isActive === 'true' : isActive,
         },
       });
       res.json(updatedCategory);

@@ -14,9 +14,9 @@ const handleValidationErrors = (req, res, next) => {
 const productValidator = {
   validateProduct: [
     body('name').notEmpty().escape().withMessage('Vui lòng nhập Tên sản phẩm'),
-    body('categoryId').isInt().escape().withMessage('Vui lòng nhập Danh mục'),
-    body('colors').optional().isArray().escape().withMessage('Vui lòng nhập Màu sắc'),
-    body('description').optional().isString().escape().withMessage('Vui lòng nhập Mô tả'),
+    body('categoryId').isInt().withMessage('Vui lòng nhập Danh mục'),
+    body('colors').optional().isArray().withMessage('Vui lòng nhập Màu sắc'),
+    body('description').optional().isString().withMessage('Vui lòng nhập Mô tả'),
     handleValidationErrors,
   ],
 

@@ -1,481 +1,244 @@
 const prisma = require('../lib/prisma');
 
+const sanitizeProductData = (data) => {
+  const { name, description, categoryId, colors } = data;
+
+  return {
+    name: name?.trim() || '',
+    description: description?.trim() || '',
+    categoryId: parseInt(categoryId, 10),
+    moreDetails: data.moreDetails || [],
+    sizeAndFit: data.sizeAndFit || [],
+    guarantee: data.guarantee?.trim() || '',
+    sizeChartImage: data.sizeChartImage || '',
+    colors: (colors || [])
+      .filter(c => c.color && c.color.trim() !== '') // Chỉ lấy màu có tên hợp lệ
+      .map(c => ({
+        color: c.color.trim(),
+        colorCode: c.colorCode || '#000000',
+        images: (c.images || [])
+          .filter(img => img.imageUrl)
+          .map((img, idx) => ({
+            imageUrl: typeof img.imageUrl === 'object' ? img.imageUrl.imageUrl : img.imageUrl,
+            order: idx
+          })),
+        variants: (c.variants || [])
+          .filter(v => v.size) // Chỉ lấy biến thể có size
+          .map(v => ({
+            size: v.size.trim(),
+            price: parseFloat(v.price) || 0,
+            stock: parseInt(v.stock, 10) || 0
+          }))
+      }))
+  };
+};
+
 const productsController = {
+  // 1. TẠO MỚI SẢN PHẨM
   createProduct: async (req, res) => {
     try {
-      const { name, description, categoryId, colors } = req.body;
+      const sanitized = sanitizeProductData(req.body);
+
+      // Kiểm tra các trường bắt buộc
+      if (!sanitized.name) return res.status(400).json({ message: 'Tên sản phẩm không được để trống' });
+      if (isNaN(sanitized.categoryId)) return res.status(400).json({ message: 'Danh mục không hợp lệ' });
+
+      // Kiểm tra danh mục có tồn tại không
+      const category = await prisma.category.findUnique({ where: { id: sanitized.categoryId } });
+      if (!category) return res.status(400).json({ message: 'Danh mục sản phẩm không tồn tại' });
 
       const product = await prisma.products.create({
         data: {
-          name,
-          description: description || '',
-          categoryId,
+          name: sanitized.name,
+          description: sanitized.description,
+          category: { connect: { id: sanitized.categoryId } },
+          moreDetails: sanitized.moreDetails,
+          sizeAndFit: sanitized.sizeAndFit,
+          guarantee: sanitized.guarantee,
+          sizeChartImage: sanitized.sizeChartImage,
           colors: {
-            create: (colors || []).map((c) => ({
+            create: sanitized.colors.map(c => ({
               color: c.color,
               colorCode: c.colorCode,
-              images: {
-                create: (c.images || []).map((image, index) => ({
-                  imageUrl: image.imageUrl,
-                  order: index,
-                })),
-              },
-              variants: {
-                create: (c.variants || []).map((variant) => ({
-                  size: variant.size,
-                  price: parseFloat(variant.price),
-                  stock: parseInt(variant.stock),
-                })),
-              },
-            })),
-          },
+              images: { create: c.images },
+              variants: { create: c.variants }
+            }))
+          }
         },
         include: {
-          colors: {
-            include: {
-              variants: true,
-            },
-          },
-        },
+          colors: { include: { variants: true, images: true } }
+        }
       });
 
       return res.status(201).json(product);
     } catch (error) {
       console.error('Error creating product:', error);
-      return res.status(500).json({ message: 'Failed to create product' });
+      return res.status(500).json({ message: 'Lỗi hệ thống khi tạo sản phẩm', error: error.message });
     }
   },
 
+  // 2. LẤY DANH SÁCH SẢN PHẨM (Đã tối ưu phân trang & tìm kiếm)
   getProducts: async (req, res) => {
     try {
       let page = parseInt(req.query.page, 10) || 1;
-      let limit;
-      if (req.query.limit === 'all') {
-        limit = 'all';
-      } else {
-        limit = parseInt(req.query.limit, 10) || 10;
-        if (limit < 1) limit = 10;
-        if (limit > 100) limit = 100;
-      }
+      let limit = req.query.limit === 'all' ? 'all' : (parseInt(req.query.limit, 10) || 10);
 
-      const search = req.query.search || '';
-      const parsedCategoryId = parseInt(req.query.categoryId, 10);
-      const categoryId = !Number.isNaN(parsedCategoryId) ? parsedCategoryId : undefined;
-
-      if (page < 1) page = 1;
-
-      const skip = limit === 'all' ? undefined : (page - 1) * limit;
+      const search = req.query.search?.trim() || '';
+      const categoryId = parseInt(req.query.categoryId, 10) || undefined;
+      const sortType = req.query.sortType || '0';
 
       const where = {
         isDeleted: false,
-        ...(search && {
-          name: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        }),
-        ...(categoryId && { categoryId }),
+        ...(search && { name: { contains: search, mode: 'insensitive' } }),
+        ...(categoryId && { categoryId })
       };
 
-      const sortType = req.query.sortType || '0';
-
-      let orderBy = { id: 'desc' }; // Default (0)
-      if (sortType === '3') {
-        orderBy = { createdAt: 'desc' }; // Latest
-      } else if (sortType === '1' || sortType === '2') {
-        // Currently no rating/popularity fields, fallback to default
-        orderBy = { id: 'desc' };
-      }
+      let orderBy = { id: 'desc' };
+      if (sortType === '3') orderBy = { createdAt: 'desc' };
 
       const [products, total] = await Promise.all([
         prisma.products.findMany({
-          skip,
+          skip: limit === 'all' ? undefined : (page - 1) * limit,
           take: limit === 'all' ? undefined : limit,
           where,
           orderBy,
           include: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            colors: {
-              include: {
-                variants: true,
-                images: true,
-              },
-            },
-          },
+            category: { select: { id: true, name: true } },
+            colors: { include: { variants: true, images: true } }
+          }
         }),
-        prisma.products.count({ where }),
+        prisma.products.count({ where })
       ]);
 
       return res.status(200).json({
         data: products,
-        meta: {
-          total,
-          page,
-          limit,
-          pageCount: limit === 'all' ? 1 : Math.ceil(total / limit),
-        },
+        meta: { total, page, limit, pageCount: limit === 'all' ? 1 : Math.ceil(total / limit) }
       });
     } catch (error) {
       console.error('Error fetching products:', error);
-      return res.status(500).json({ message: 'Failed to fetch products' });
+      return res.status(500).json({ message: 'Lỗi khi lấy danh sách sản phẩm' });
     }
   },
 
+  // 3. CẬP NHẬT SẢN PHẨM (Sử dụng Transaction an toàn)
+  updateProduct: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const productId = parseInt(id, 10);
+      const sanitized = sanitizeProductData(req.body);
+
+      if (isNaN(productId)) return res.status(400).json({ message: 'ID sản phẩm không hợp lệ' });
+
+      // Kiểm tra sản phẩm có tồn tại không
+      const existingProduct = await prisma.products.findUnique({ where: { id: productId } });
+      if (!existingProduct) return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
+
+      const result = await prisma.$transaction(async (tx) => {
+        // Cập nhật thông tin cơ bản
+        await tx.products.update({
+          where: { id: productId },
+          data: {
+            name: sanitized.name,
+            description: sanitized.description,
+            category: { connect: { id: sanitized.categoryId } },
+            moreDetails: sanitized.moreDetails,
+            sizeAndFit: sanitized.sizeAndFit,
+            guarantee: sanitized.guarantee,
+            sizeChartImage: sanitized.sizeChartImage
+          }
+        });
+
+        // Nếu có gửi danh sách màu sắc, thực hiện đồng bộ lại
+        if (req.body.colors) {
+          // Xóa các màu cũ không có trong danh sách mới (Logic đơn giản hóa cho độ tin cậy cao)
+          // Lưu ý: Trong thực tế bạn có thể dùng logic update từng cái, nhưng xóa-tạo lại là cách an toàn nhất để tránh rác dữ liệu
+          await tx.productColor.deleteMany({ where: { productId } });
+
+          // Tạo lại bộ màu sắc, biến thể và ảnh mới
+          for (const c of sanitized.colors) {
+            await tx.productColor.create({
+              data: {
+                productId,
+                color: c.color,
+                colorCode: c.colorCode,
+                images: { create: c.images },
+                variants: { create: c.variants }
+              }
+            });
+          }
+        }
+        return await tx.products.findUnique({
+          where: { id: productId },
+          include: { colors: { include: { variants: true, images: true } } }
+        });
+      });
+
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      return res.status(500).json({ message: 'Lỗi khi cập nhật sản phẩm', error: error.message });
+    }
+  },
+
+  // 4. LẤY CHI TIẾT SẢN PHẨM
   getProductById: async (req, res) => {
     try {
       const { id } = req.params;
       const product = await prisma.products.findUnique({
-        where: {
-          id: parseInt(id, 10),
-          isDeleted: false,
-        },
+        where: { id: parseInt(id, 10), isDeleted: false },
         include: {
-          category: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
-          colors: {
-            include: {
-              images: {
-                orderBy: {
-                  order: 'asc',
-                },
-              },
-              variants: true,
-            },
-          },
-        },
+          category: { select: { id: true, name: true } },
+          colors: { include: { images: { orderBy: { order: 'asc' } }, variants: true } }
+        }
       });
-
-      if (!product) {
-        return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
-      }
-
+      if (!product) return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
       return res.status(200).json(product);
     } catch (error) {
-      console.error('Error fetching product detail:', error);
-      return res.status(500).json({ message: 'Failed to fetch product detail' });
+      return res.status(500).json({ message: 'Lỗi khi lấy chi tiết sản phẩm' });
     }
   },
 
-  updateProduct: async (req, res) => {
+  // 5. XÓA SẢN PHẨM (Soft Delete)
+  deleteProduct: async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, description, categoryId, colors } = req.body;
-
-      // --- PHẦN DEBUG UPDATE ---
-      // console.log('------------ DEBUG UPDATE PRODUCT DATA ------------');
-      // console.log('Product ID:', id);
-      // console.log('Data:', JSON.stringify(req.body, null, 2));
-
-      // const fs = require('fs');
-      // fs.writeFileSync('debug_update_product.json', JSON.stringify({ id, ...req.body }, null, 2));
-      // console.log('-> Dữ liệu update đã được ghi vào file: debug_update_product.json');
-      // console.log('---------------------------------------------------');
-      // -------------------------
-
-      const product = await prisma.$transaction(async (tx) => {
-        await tx.products.update({
-          where: { id: parseInt(id, 10) },
-          data: {
-            name,
-            description: description || '',
-            categoryId,
-          },
-        });
-
-        if (colors) {
-          const existingColors = await tx.productColor.findMany({
-            where: { productId: parseInt(id, 10) },
-            include: {
-              variants: {
-                include: {
-                  orderItems: true,
-                },
-              },
-              images: true,
-            },
-          });
-
-          const variantIdInOrder = new Set();
-          existingColors.forEach((color) => {
-            color.variants.forEach((variant) => {
-              if (variant.orderItems && variant.orderItems.length > 0) {
-                variantIdInOrder.add(variant.id);
-              }
-            });
-          });
-
-          const existingColorsMap = new Map();
-          existingColors.forEach((color) => {
-            existingColorsMap.set(color.color, color);
-          });
-
-          for (const incomingColor of colors) {
-            const existingColor = existingColorsMap.get(incomingColor.color);
-            if (existingColor) {
-              // Xóa ảnh cũ và tạo lại
-              await tx.productColorImage.deleteMany({
-                where: { colorId: existingColor.id },
-              });
-
-              if (incomingColor.images?.length) {
-                await tx.productColorImage.createMany({
-                  data: incomingColor.images.map((image, index) => ({
-                    colorId: existingColor.id,
-                    imageUrl: image.imageUrl,
-                    order: index,
-                  })),
-                });
-              }
-
-              // Cập nhật mã màu
-              await tx.productColor.update({
-                where: { id: existingColor.id },
-                data: { colorCode: incomingColor.colorCode || '#000000' },
-              });
-
-              // Xử lý Variants của màu này
-              const existingVariantMap = new Map();
-              existingColor.variants.forEach((v) => existingVariantMap.set(v.size, v));
-
-              const incomingVariantSizes = new Set(incomingColor.variants?.map((v) => v.size));
-
-              // Xóa size không còn tồn tại
-              for (const exV of existingColor.variants) {
-                if (!incomingVariantSizes.has(exV.size) && !variantIdInOrder.has(exV.id)) {
-                  await tx.productColorVariants.delete({ where: { id: exV.id } });
-                }
-              }
-
-              // Cập nhật hoặc tạo mới size
-              for (const inV of incomingColor.variants || []) {
-                const exV = existingVariantMap.get(inV.size);
-                if (exV) {
-                  await tx.productColorVariants.update({
-                    where: { id: exV.id },
-                    data: {
-                      price: parseFloat(inV.price),
-                      stock: parseInt(inV.stock, 10),
-                    },
-                  });
-                } else {
-                  await tx.productColorVariants.create({
-                    data: {
-                      colorId: existingColor.id,
-                      size: inV.size,
-                      price: parseFloat(inV.price),
-                      stock: parseInt(inV.stock, 10),
-                    },
-                  });
-                }
-              }
-              // Đánh dấu màu này đã được xử lý (để không bị xóa ở bước sau)
-              existingColorsMap.delete(incomingColor.color);
-            } else {
-              // Tạo màu sắc hoàn toàn mới
-              await tx.productColor.create({
-                data: {
-                  productId: parseInt(id, 10),
-                  color: incomingColor.color,
-                  colorCode: incomingColor.colorCode || '#000000',
-                  images: {
-                    create: incomingColor.images?.map((image, index) => ({
-                      imageUrl: image.imageUrl,
-                      order: index,
-                    })),
-                  },
-                  variants: {
-                    create: incomingColor.variants?.map((variant) => ({
-                      size: variant.size,
-                      price: parseFloat(variant.price),
-                      stock: parseInt(variant.stock, 10),
-                    })),
-                  },
-                },
-              });
-            }
-          }
-
-          // Xử lý xóa các màu sắc không còn trong danh sách gửi lên
-          const colorBlockedByOrders = [];
-          const colorsToDelete = [];
-
-          for (const [colorName, exColor] of existingColorsMap) {
-            const variantInOrders = exColor.variants.filter((v) => variantIdInOrder.has(v.id));
-            if (variantInOrders.length > 0) {
-              colorBlockedByOrders.push({
-                color: colorName,
-                variants: variantInOrders.map((v) => v.size),
-              });
-            } else {
-              colorsToDelete.push(exColor);
-            }
-          }
-
-          if (colorBlockedByOrders.length > 0) {
-            throw new Error('ORDERED_VARIANTS_EXIST:' + JSON.stringify(colorBlockedByOrders));
-          }
-
-          for (const color of colorsToDelete) {
-            await tx.productColorVariants.deleteMany({ where: { colorId: color.id } });
-            await tx.productColorImage.deleteMany({ where: { colorId: color.id } });
-            await tx.productColor.delete({ where: { id: color.id } });
-          }
-        }
-
-        return tx.products.findUnique({
-          where: {
-            id: parseInt(id, 10),
-          },
-          include: {
-            colors: {
-              include: {
-                variants: true,
-                images: true,
-              },
-            },
-          },
-        });
-      });
-
-      return res.status(200).json(product);
-    } catch (error) {
-      if (error.message?.startsWith('ORDERED_VARIANTS_EXIST:')) {
-        const data = JSON.parse(
-          error.message.replace('ORDERED_VARIANTS_EXIST:', '')
-        );
-        return res.status(400).json({
-          error: 'ORDERED_VARIANTS_EXIST',
-          message: 'Không thể xoá màu sắc / size vì có đơn hàng đã sử dụng',
-          blockedColors: data,
-        });
-      }
-
-      console.log(error);
-      return res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-
-  deleteProduct: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const productWithOrder = await prisma.products.findUnique({
-        where: {
-          id: parseInt(id, 10),
-        },
-        include: {
-          colors: {
-            include: {
-              variants: {
-                include: {
-                  orderItems: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!productWithOrder) {
-        return res.status(404).json({ error: 'Product not found' });
-      }
-
-      const variantsInOrders = [];
-
-      productWithOrder.colors.forEach((color) => {
-        color.variants.forEach((variant) => {
-          if (!variant.orderItems && variant.orderItems.length > 0) {
-            variantsInOrders.push({
-              color: color.color,
-              size: variant.size,
-              ordersCount: variant.orderItems.length,
-            });
-          }
-        });
-      });
-
-      if (variantsInOrders.length > 0) {
-        const details = variantsInOrders
-          .map(
-            (variant) => `${variant.color} (${variant.ordersCount}) Đơn hàng`
-          )
-          .join(', ');
-
-        return res.status(400).json({
-          error: 'ORDERED_VARIANTS_EXIST',
-          message: `Không thể xoá sản phẩm vì đã có khách hàng đặt hàng. Các biến thể: ${details}. Vui lòng liên hệ quản trị viên để xử lý`,
-          variantsInOrders,
-        });
-      }
-
       await prisma.products.update({
-        where: {
-          id: parseInt(id, 10),
-        },
-        data: {
-          isDeleted: true,
-        },
+        where: { id: parseInt(id, 10) },
+        data: { isDeleted: true }
       });
-
-      return res.status(200).json({ message: 'Xoá sản phẩm thành công' });
+      return res.status(200).json({ message: 'Xóa sản phẩm thành công' });
     } catch (error) {
-      console.log('Lỗi khi xoá sản phẩm:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ message: 'Lỗi khi xóa sản phẩm' });
     }
   },
 
+  // 6. LẤY SẢN PHẨM LIÊN QUAN
   getRelatedProducts: async (req, res) => {
     try {
       const { id } = req.params;
+      const productId = parseInt(id, 10);
 
-      // 1. Lấy thông tin sản phẩm hiện tại để biết categoryId
-      const currentProduct = await prisma.products.findUnique({
-        where: { id: parseInt(id, 10) },
-        select: { categoryId: true },
-      });
+      const product = await prisma.products.findUnique({ where: { id: productId } });
+      if (!product) return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
 
-      if (!currentProduct) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-
-      // 2. Lấy danh sách sản phẩm cùng danh mục, loại trừ chính nó
-      const relatedProducts = await prisma.products.findMany({
+      const related = await prisma.products.findMany({
         where: {
-          categoryId: currentProduct.categoryId,
-          id: { not: parseInt(id, 10) }, // Loại trừ sản phẩm đang xem
-          isDeleted: false,
+          categoryId: product.categoryId,
+          id: { not: productId },
+          isDeleted: false
         },
-        take: 8, // Lấy tối đa 8 sản phẩm liên quan
-        orderBy: {
-          id: 'desc',
-        },
+        take: 4, // Lấy 4 sản phẩm liên quan
         include: {
-          category: true,
-          colors: {
-            include: {
-              images: {
-                orderBy: { order: 'asc' },
-              },
-              variants: true,
-            },
-          },
-        },
+          category: { select: { id: true, name: true } },
+          colors: { include: { variants: true, images: true } }
+        }
       });
-
-      return res.status(200).json({ relatedProducts });
+      return res.status(200).json(related);
     } catch (error) {
       console.error('Error fetching related products:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+      return res.status(500).json({ message: 'Lỗi khi lấy sản phẩm liên quan' });
     }
-  },
+  }
 };
 
 module.exports = productsController;

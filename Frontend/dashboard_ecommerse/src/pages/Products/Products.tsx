@@ -17,6 +17,7 @@ const Products = () => {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductType | null>(null);
+  const [isDuplicate, setIsDuplicate] = useState(false);
   const { isDark } = useContext(ThemeContext);
   const [isLoading, setIsLoading] = useState(false);
   const [filter, setFilter] = useState({
@@ -72,7 +73,18 @@ const Products = () => {
   };
 
   const handleEditProduct = (product: ProductType) => {
+    setIsDuplicate(false);
     setEditingProduct(product);
+    setOpenModal(true);
+  };
+
+  const handleDuplicateProduct = (product: ProductType) => {
+    setIsDuplicate(true);
+    // Thêm hậu tố (Copy) để người dùng dễ phân biệt
+    setEditingProduct({
+      ...product,
+      name: `${product.name} (Copy)`,
+    });
     setOpenModal(true);
   };
 
@@ -120,12 +132,14 @@ const Products = () => {
   const handleCloseModal = () => {
     setOpenModal(false);
     setEditingProduct(null);
+    setIsDuplicate(false);
   };
 
   const handleSuccessModal = () => {
     fetchProducts();
     setOpenModal(false);
     setEditingProduct(null);
+    setIsDuplicate(false);
   };
 
   useEffect(() => {
@@ -163,6 +177,7 @@ const Products = () => {
         <Button 
           type='primary' 
           onClick={() => {
+            setIsDuplicate(false);
             setEditingProduct(null);
             setOpenModal(true);
           }}
@@ -178,6 +193,7 @@ const Products = () => {
         loading={isLoading}
         onEdit={handleEditProduct}
         onDelete={handleDeleteProduct}
+        onDuplicate={handleDuplicateProduct}
         pagination={{
           total,
           current: filter.page,
@@ -192,6 +208,7 @@ const Products = () => {
         onCancel={handleCloseModal}
         onSuccess={handleSuccessModal}
         product={editingProduct}
+        isDuplicate={isDuplicate}
       />
     </div>
   );

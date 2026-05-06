@@ -16,7 +16,22 @@ const getDetailProduct = async (id) => {
 
 const getRelatedProduct = async (id) => {
   const res = await axiosClient.get(`/related-products/${id}`);
-  return res.data.relatedProducts;
+  return res.data;
 };
 
-export { getProducts, getDetailProduct, getRelatedProduct };
+const searchProductsByELK = async (params) => {
+  const res = await axiosClient.get('/search', { params });
+  return res.data;
+};
+
+const searchByPriceELK = async (min, max) => {
+  const res = await axiosClient.get('/search/price', { params: { min, max } });
+  return res.data;
+};
+
+const searchByDateELK = async () => {
+  const res = await axiosClient.get('/search/latest');
+  return res.data;
+};
+
+export { getProducts, getDetailProduct, getRelatedProduct, searchProductsByELK, searchByPriceELK, searchByDateELK };

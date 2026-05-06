@@ -34,9 +34,10 @@ type Props = {
   onCancel: () => void;
   onSuccess?: () => void;
   product?: ProductType | null;
+  isDuplicate?: boolean;
 };
 
-const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
+const ProductModal = ({ isOpen, onCancel, onSuccess, product, isDuplicate }: Props) => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const [categories, setCategories] = useState<CategoryType[]>([]);
@@ -50,9 +51,20 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
     try {
       setSubmitting(true);
       const values = await form.validateFields();
-
+  
       // --- LOGIC DELAYED UPLOAD ---
-      // Duyệt qua tất cả ảnh để tìm các file chưa upload
+      // 1. Upload ảnh bảng size (nếu có)
+      let sizeChartUrl = values.sizeChartImage;
+      if (values.sizeChartImage?.file) {
+        console.log('Đang upload ảnh bảng size...', values.sizeChartImage.file);
+        const uploadRes = await UploadService.uploadSingle(values.sizeChartImage.file);
+        sizeChartUrl = uploadRes.imageUrl;
+        console.log('Upload bảng size thành công:', sizeChartUrl);
+      } else if (typeof values.sizeChartImage === 'object') {
+        sizeChartUrl = values.sizeChartImage?.imageUrl || values.sizeChartImage?.url || '';
+      }
+
+      // 2. Duyệt qua tất cả ảnh màu sắc để upload
       const updatedColors = await Promise.all(
         (values.colors || []).map(async (color: any) => {
           const updatedImages = await Promise.all(
@@ -76,15 +88,15 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
         })
       );
 
-      const finalValues = { ...values, colors: updatedColors };
+      const finalValues = { ...values, colors: updatedColors, sizeChartImage: sizeChartUrl };
       // ----------------------------
 
-      if (product) {
+      if (product && !isDuplicate) {
         await ProductService.updateProduct(product.id, finalValues);
         message.success('Cập nhật sản phẩm thành công');
       } else {
         await ProductService.createProduct(finalValues);
-        message.success('Tạo sản phẩm thành công');
+        message.success(isDuplicate ? 'Nhân bản sản phẩm thành công' : 'Tạo sản phẩm thành công');
       }
 
       form.resetFields();
@@ -135,6 +147,7 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
         // Chuẩn hóa dữ liệu ảnh từ API (string) sang Object cho Component Upload
         const normalizedProduct = {
           ...product,
+          sizeChartImage: product.sizeChartImage ? { imageUrl: product.sizeChartImage } : undefined,
           colors: product.colors?.map((color) => ({
             ...color,
             images: color.images?.map((img) => ({
@@ -173,11 +186,17 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
   return (
     <>
       <AppModal
-        title={product ? 'Cập nhật sản phẩm' : 'Tạo mới sản phẩm'}
+        title={
+          isDuplicate
+            ? 'Nhân bản sản phẩm'
+            : product
+              ? 'Cập nhật sản phẩm'
+              : 'Tạo mới sản phẩm'
+        }
         open={isOpen}
         onCancel={onCancel}
         onOk={handleOk}
-        okText={product ? 'Cập nhật' : 'Tạo'}
+        okText={isDuplicate ? 'Tạo (Nhân bản)' : product ? 'Cập nhật' : 'Tạo'}
         cancelText='Hủy'
         confirmLoading={submitting}
         width={900}
@@ -614,6 +633,84 @@ const ProductModal = ({ isOpen, onCancel, onSuccess, product }: Props) => {
               </div>
             )}
           </Form.List>
+
+          <Divider />
+          <div>
+            <Typography.Title level={5}>Thông tin thêm</Typography.Title>
+
+            <Row gutter={24}>
+              <Col span={12}>
+                <Form.Item label="Thông tin bổ sung">
+                  <Form.List name="moreDetails">
+                    {(fields, { add, remove }) => (
+                      <>
+                        {fields.map(({ key, name, ...restField }) => (
+                          <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                            <Form.Item
+                              {...restField}
+                              name={[name]}
+                              rules={[{ required: true, message: 'Vui lòng nhập nội dung' }]}
+                              style={{ marginBottom: 0, width: '350px' }}
+                            >
+                              <Input placeholder="Ví dụ: 100% ring-spun cotton" />
+                            </Form.Item>
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          </Space>
+                        ))}
+                        <Form.Item>
+                          <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                            Thêm dòng
+                          </Button>
+                        </Form.Item>
+                      </>
+                    )}
+                  </Form.List>
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item name="sizeChartImage" label="Bảng quy đổi kích cỡ (Ảnh)">
+                  <UploadImage />
+                  <Typography.Text type="secondary" style={{ fontSize: '12px' }}>
+                    Nên tải lên ảnh chứa bảng thông số (Cân nặng, chiều cao...)
+                  </Typography.Text>
+                </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Form.Item label="Mô tả kích cỡ & Form dáng">
+                  <Form.List name="sizeAndFit">
+                    {(fields, { add, remove }) => (
+                      <>
+                        {fields.map(({ key, name, ...restField }) => (
+                          <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                            <Form.Item
+                              {...restField}
+                              name={[name]}
+                              rules={[{ required: true, message: 'Vui lòng nhập nội dung' }]}
+                              style={{ marginBottom: 0, width: '350px' }}
+                            >
+                              <Input placeholder="Ví dụ: Relaxed fit" />
+                            </Form.Item>
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          </Space>
+                        ))}
+                        <Form.Item>
+                          <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+                            Thêm dòng mô tả
+                          </Button>
+                        </Form.Item>
+                      </>
+                    )}
+                  </Form.List>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item name="guarantee" label="Chính sách bảo hành & Đổi trả">
+              <Input.TextArea rows={4} placeholder="Nhập chính sách bảo hành, đổi trả..." />
+            </Form.Item>
+          </div>
         </Form>
       </AppModal>
     </>

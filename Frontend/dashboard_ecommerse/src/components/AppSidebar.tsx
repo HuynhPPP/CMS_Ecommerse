@@ -5,14 +5,23 @@ import {
   AppstoreOutlined,
   UserOutlined,
   ShoppingCartOutlined,
-  GiftOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../contexts/ThemeContext';
+import { getSettings, type Settings } from '../services/SettingService';
 
 const AppSidebar = () => {
+  const [settings, setSettings] = useState<Settings | null>(null);
+  const navigate = useNavigate();
+  const { isDark } = useContext(ThemeContext);
+
+  useEffect(() => {
+    getSettings().then(data => setSettings(data)).catch(console.error);
+  }, []);
+
   const items = [
     {
       key: 'dashboard',
@@ -39,21 +48,28 @@ const AppSidebar = () => {
       icon: <ShoppingCartOutlined />,
       label: 'Đơn hàng',
     },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: 'Cấu hình',
+    },
   ];
-
-  const navigate = useNavigate();
-
-  const { isDark } = useContext(ThemeContext);
 
   const handleNavigate = (path: any) => {
     navigate(`/${path.key}`);
   };
 
   return (
-    <Sider trigger={null} collapsible style={{ height: '100vh' }}>
+    <Sider trigger={null} collapsible style={{ height: '100vh', position: 'sticky', top: 0, left: 0 }}>
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <div className='text-xl font-bold text-blue-600 text-center py-5'>
-          ADMIN PANEL
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          {settings?.logoUrl ? (
+            <img src={settings.logoUrl} alt="Logo" style={{ maxWidth: '100%', maxHeight: '40px', objectFit: 'contain' }} />
+          ) : (
+            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#6366f1' }}>
+              ADMIN PANEL
+            </div>
+          )}
         </div>
         <Menu
           theme={isDark ? 'dark' : 'light'}

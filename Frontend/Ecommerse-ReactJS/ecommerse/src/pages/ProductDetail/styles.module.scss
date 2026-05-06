@@ -3,6 +3,7 @@
 
 .container {
   padding-top: 83px;
+
   .functionBox {
     @include flex_box_custom(space-between, center, 0px);
     color: $secondary_color;
@@ -21,33 +22,44 @@
   }
 
   .contentSection {
-    @include flex_box_custom(unset, flex-start, 20px);
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    margin-top: 20px;
 
     .imageBox {
-      max-width: 610px;
-      width: 100%;
+      flex: 0 0 45%; // Cố định cột trái ở 45%
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); // Chia 2 cột bằng nhau
+      gap: 15px;
 
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      // Cấu hình cho thẻ bao ngoài của ReactImageMagnifier
+      & > div {
+        position: relative;
+        overflow: hidden; // Ngăn lớp phủ tràn ra ngoài
+        border-radius: 4px;
 
-      img {
-        width: calc(100% / 2 - 10px);
-        height: 350px;
-        object-fit: cover;
-        border-radius: 3px;
-        cursor: zoom-in;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          cursor: zoom-in;
+        }
       }
     }
 
     .infoBox {
-      flex-grow: 1;
+      flex: 1; // Chiếm trọn phần còn lại
+      min-width: 0; // Quan trọng để ngăn nội dung đẩy rộng container
 
       h1 {
-        font-size: 24px;
+        font-size: 28px;
         margin-top: 0px;
-        font-weight: 400;
+        font-weight: 500;
         color: $four_color;
+        line-height: 1.2;
+        margin-bottom: 10px;
       }
 
       .price {
@@ -183,28 +195,35 @@
 
 .containerInfoProduct {
   font-weight: 400;
-
-  div:last-child {
-    border-bottom: unset;
-  }
+  border-top: 1px solid #e1e1e1;
+  margin-top: 10px;
 
   .itemInformation {
-    @include flex_box_custom(flex-start, center, 0px);
-
-    border-bottom: 1px solid #e1e1e1;
-    padding: 15px 0px;
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
 
     div {
-      width: 50%;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
     .title {
-      color: $secondary_color;
+      flex: 0 0 150px; // Cố định chiều rộng tiêu đề
+      color: #777;
+      font-weight: 500;
     }
 
     .content {
+      flex: 1;
       color: $thr_color;
+      word-break: break-word;
     }
+  }
+
+  .itemInformation:last-child {
+    border-bottom: none;
   }
 }
 
@@ -337,11 +356,9 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(
-      circle,
-      rgba(0, 0, 0, 0.02) 1px,
-      transparent 1px
-    );
+    background: radial-gradient(circle,
+        rgba(0, 0, 0, 0.02) 1px,
+        transparent 1px);
     background-size: 50px 50px;
     animation: moveBackground 20s linear infinite;
   }
@@ -499,6 +516,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -506,23 +524,28 @@
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
 }
 
 @keyframes shake {
+
   0%,
   100% {
     transform: rotate(0deg);
   }
+
   25% {
     transform: rotate(-10deg);
   }
+
   75% {
     transform: rotate(10deg);
   }
@@ -532,6 +555,7 @@
   0% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(50px, 50px);
   }

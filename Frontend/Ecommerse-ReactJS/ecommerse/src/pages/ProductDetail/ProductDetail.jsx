@@ -9,7 +9,7 @@ import { PiShoppingCart } from 'react-icons/pi';
 import Button from '@components/Button/Button';
 import PaymentMethod from '@components/PaymentMethod/PaymentMethod';
 import AccordionMenu from '@components/AccordionMenu';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import InformationProduct from '@/pages/ProductDetail/components/Information';
 import Review from '@/pages/ProductDetail/components/Review';
 import SliderCommon from '@components/SliderCommon/SliderCommon';
@@ -67,6 +67,8 @@ function ProductDetail() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingBtn, setIsLoadingBtn] = useState(false);
   const [isLoadingBtnBuyNow, setIsLoadingBtnBuyNow] = useState(false);
+  const [imageWidth, setImageWidth] = useState(260);
+  const imageBoxRef = useRef(null);
   const param = useParams();
 
   const { setIsOpen, setType, handleGetListProductsCart } =
@@ -187,6 +189,19 @@ function ProductDetail() {
     }
   }, [param.id]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (imageBoxRef.current) {
+        const totalWidth = imageBoxRef.current.offsetWidth;
+        const cellWidth = (totalWidth - 15) / 2;
+        setImageWidth(cellWidth);
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [data]);
+
   // Lấy giá hiển thị (lấy từ variant đầu tiên của màu đang chọn)
   const currentPrice = colorSelected?.variants?.[0]?.price
     ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(colorSelected.variants[0].price)
@@ -228,17 +243,18 @@ function ProductDetail() {
                 </div>
               ) : (
                 <div className={contentSection}>
-                  <div className={imageBox}>
+                  <div className={imageBox} ref={imageBoxRef}>
                     {colorSelected?.images?.map((img, index) => (
-                      <ReactImageMagnifier
-                        key={index}
-                        srcPreview={img.imageUrl}
-                        srcOriginal={img.imageUrl}
-                        width={295}
-                        height={350}
-                      />
+                      <div key={index}>
+                        <ReactImageMagnifier
+                          srcPreview={img.imageUrl}
+                          srcOriginal={img.imageUrl}
+                          width={imageWidth}
+                          height={imageWidth * 1.3}
+                        />
+                      </div>
                     ))}
-                    {!colorSelected?.images?.length && <div style={{ width: 295, height: 350, background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Không có ảnh</div>}
+                    {!colorSelected?.images?.length && <div style={{ width: imageWidth, height: imageWidth * 1.3, background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Không có ảnh</div>}
                   </div>
 
                   <div className={infoBox}>

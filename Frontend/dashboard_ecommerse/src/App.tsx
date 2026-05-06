@@ -5,6 +5,7 @@ import Products from './pages/Products/Products';
 import Categories from './pages/Categories/Categories';
 import Users from './pages/Users/Users';
 import Orders from './pages/Orders/Orders';
+import Settings from './pages/Settings/Settings';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path='category' element={<Categories />} />
             <Route path='users' element={<Users />} />
             <Route path='orders' element={<Orders />} />
+            <Route path='settings' element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>

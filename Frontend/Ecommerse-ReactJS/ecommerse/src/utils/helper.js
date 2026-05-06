@@ -52,3 +52,11 @@ export const handleTotalPrice = (listProductCart) => {
     return acc + item.total;
   }, 0);
 };
+
+export const optimizeCloudinaryUrl = (url, width = 800) => {
+  if (!url || !url.includes('cloudinary.com')) return url;
+  
+  // Chèn q_auto, f_auto và width vào sau /upload/
+  // URL mẫu: https://res.cloudinary.com/demo/image/upload/v12345678/sample.jpg
+  return url.replace('/upload/', `/upload/q_auto,f_auto,w_${width}/`);
+};

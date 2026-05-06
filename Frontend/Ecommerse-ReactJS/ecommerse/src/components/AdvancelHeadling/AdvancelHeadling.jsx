@@ -8,8 +8,8 @@ function AdvancelHeadling() {
       <div className={container}>
         <div className={headline}></div>
         <div className={containerMiddleBox}>
-            <p className={des}>don't miss super offers</p>
-            <p className={title}>Our best products</p>
+          <p className={des}>ĐỪNG BỎ LỠ CÁC KHUYẾN MÃI ĐẶC BIỆT</p>
+          <p className={title}>Sản phẩm tốt nhất</p>
         </div>
         <div className={headline}></div>
       </div>

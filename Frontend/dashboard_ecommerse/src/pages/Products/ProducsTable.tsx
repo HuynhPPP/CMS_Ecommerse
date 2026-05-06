@@ -8,6 +8,7 @@ type Props = {
   loading?: boolean;
   onEdit?: (product: ProductType) => void;
   onDelete?: (id: number) => void;
+  onDuplicate?: (product: ProductType) => void;
   pagination?: any;
   onChange?: (pagination: any) => void;
 };
@@ -17,6 +18,7 @@ const ProducsTable = ({
   loading,
   onEdit,
   onDelete,
+  onDuplicate,
   pagination,
   onChange,
 }: Props) => {
@@ -158,8 +160,10 @@ const ProducsTable = ({
         <TableAction
           showEdit={true}
           showDelete={true}
+          showDuplicate={true}
           onEdit={() => onEdit?.(record)}
           onDelete={() => onDelete?.(record.id)}
+          onDuplicate={() => onDuplicate?.(record)}
         />
       ),
     },

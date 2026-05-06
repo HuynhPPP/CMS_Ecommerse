@@ -48,6 +48,11 @@ model Products {
   isActive    Boolean  @default(true)
   isDeleted   Boolean  @default(false)
 
+  moreDetails Json?    // Lưu danh sách chi tiết (bullet points)
+  sizeAndFit  Json?    // Lưu thông tin Size & Fit
+  guarantee   String?  // Lưu thông tin bảo hành/đổi trả
+  sizeChartImage String? // Ảnh bảng size tổng hợp
+
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
@@ -163,4 +168,12 @@ model CartItem {
 
   cart    Cart                 @relation(fields: [cartId], references: [id], onDelete: Cascade)
   variant ProductColorVariants @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+}
+model Setting {
+  id            Int      @id @default(autoincrement())
+  logoUrl       String?
+  socialLinks   Json?    // { "facebook": "...", "instagram": "...", "twitter": "..." }
+  countdownDate DateTime?
+  contactInfo   Json?    // { "address": "...", "email": "...", "phone": "..." }
+  updatedAt     DateTime @updatedAt
 }
